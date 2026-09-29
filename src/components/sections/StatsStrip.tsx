@@ -1,15 +1,16 @@
 import type { NetworkStats } from '@/types'
 import { cn } from '@/lib/cn'
 import { count, sol, usd } from '@/lib/format'
+import { CountUp } from '@/components/motion/CountUp'
 
-/** The network in five numbers, split by hairlines. NORA: sample aggregates. */
+/** The network in five numbers, split by hairlines. They count up once, together. NORA: sample aggregates. */
 export function StatsStrip({ stats }: { stats: NetworkStats }) {
   const items = [
-    { k: 'Companies', v: count(stats.companies) },
-    { k: 'Creator fees, 30 days', v: usd(stats.fees30dUsd) },
-    { k: 'Network treasury', v: sol(stats.treasurySol, 0) },
-    { k: 'Average runway', v: `${stats.avgRunwayDays} days` },
-    { k: 'In receivership', v: count(stats.inReceivership), red: true },
+    { k: 'Companies', n: stats.companies, f: (v: number) => count(Math.round(v)) },
+    { k: 'Creator fees, 30 days', n: stats.fees30dUsd, f: usd },
+    { k: 'Network treasury', n: stats.treasurySol, f: (v: number) => sol(v, 0) },
+    { k: 'Average runway', n: stats.avgRunwayDays, f: (v: number) => `${Math.round(v)} days` },
+    { k: 'In receivership', n: stats.inReceivership, f: (v: number) => count(Math.round(v)), red: true },
   ]
   return (
     <section aria-label="Network numbers" className="border-y border-line">
@@ -26,7 +27,9 @@ export function StatsStrip({ stats }: { stats: NetworkStats }) {
             )}
           >
             <dt className="text-[13px] text-ink-3">{it.k}</dt>
-            <dd className={cn('mt-2 font-mono text-stat font-medium tabular', it.red && 'text-red')}>{it.v}</dd>
+            <dd className={cn('mt-2 font-mono text-stat font-medium tabular', it.red && 'text-red')}>
+              <CountUp value={it.n} format={it.f} delay={i * 0.06} />
+            </dd>
           </div>
         ))}
       </dl>

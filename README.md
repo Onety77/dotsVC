@@ -10,6 +10,6 @@ npm run dev
 ```
 
 - `DESIGN.md` covers the design brief: research, direction, colour, type and layout.
-- `HANDOFF.md` covers what's wired, what isn't (`NORA:` markers), the page and data map, and the **motion plan** for the next pass.
+- `HANDOFF.md` covers what's wired, what isn't (`NORA:` markers), the page and data map, and how the motion is built.
 
 All companies, figures and bids in `src/data/` are fictional sample data.

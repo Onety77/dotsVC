@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
 // NORA: replace with indexer queries.
-import { companies, getCompany, listings, networkStats, sampleNow } from '@/data/network'
+import { companies, getCompany, listings, networkStats } from '@/data/network'
 import { sol } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Section, SectionHead } from '@/components/ui/Section'
@@ -12,6 +12,8 @@ import { Hero } from '@/components/sections/Hero'
 import { Lifecycle } from '@/components/sections/Lifecycle'
 import { StatsStrip } from '@/components/sections/StatsStrip'
 import { docsUrl } from '@/components/layout/nav'
+import { Item, Reveal, Stagger } from '@/components/motion/Reveal'
+import { DotPeriod, MaskLine } from '@/components/motion/Headline'
 
 const guarantees = [
   { t: 'Spends only through jobs', b: 'The agent can’t move the treasury. It can only fund jobs its mandate allows, from escrow.' },
@@ -71,11 +73,13 @@ export function Home() {
             </Button>
           }
         />
-        <div className="mt-12 grid gap-4 md:grid-cols-3 [&>*]:min-w-0">
+        <Stagger gap={0.1} className="mt-12 grid gap-4 md:grid-cols-3 [&>*]:min-w-0">
           {forSale.map((l) => (
-            <ListingCard key={l.companyId} listing={l} company={getCompany(l.companyId)!} now={sampleNow} onBid={(id) => navigate(`/receivership?bid=${id}`)} />
+            <Item key={l.companyId} className="flex">
+              <ListingCard listing={l} company={getCompany(l.companyId)!} onBid={(id) => navigate(`/receivership?bid=${id}`)} className="flex-1" />
+            </Item>
           ))}
-        </div>
+        </Stagger>
       </Section>
 
       <Section labelledBy="agent-title">
@@ -88,39 +92,41 @@ export function Home() {
             <p className="mt-5 max-w-[46ch] text-lead text-ink-2">
               You write the mission. The agent hires, ships and reports, every hour of every day, inside rules it can’t break.
             </p>
-            <ul className="mt-10 grid gap-6">
+            <Stagger as="ul" gap={0.1} className="mt-10 grid gap-6">
               {guarantees.map((g, i) => (
-                <li key={g.t} className="grid grid-cols-[28px_1fr] gap-3">
+                <Item as="li" key={g.t} className="grid grid-cols-[28px_1fr] gap-3">
                   <span className="mt-0.5 font-mono text-[12px] text-ink-3">0{i + 1}</span>
                   <span>
                     <span className="block font-semibold">{g.t}</span>
                     <span className="mt-1 block text-[15px] text-ink-2">{g.b}</span>
                   </span>
-                </li>
+                </Item>
               ))}
-            </ul>
+            </Stagger>
           </div>
-          <div className="lg:col-span-6 lg:col-start-7">
-            <AgentConsole company={frog} now={sampleNow} />
-          </div>
+          <Reveal className="lg:col-span-6 lg:col-start-7" delay={0.1}>
+            <AgentConsole company={frog} />
+          </Reveal>
         </div>
       </Section>
 
       <section aria-labelledby="close-title" className="border-t border-line">
         <div className="wrap py-20 lg:py-28">
           <h2 id="close-title" className="text-display font-semibold">
-            Put your coin
-            <br />
-            <span className="text-ink-3">to work.</span>
+            <MaskLine inView>Put your coin</MaskLine>
+            <MaskLine inView delay={0.1} className="text-ink-3">
+              to work
+              <DotPeriod inView delay={0.85} />
+            </MaskLine>
           </h2>
-          <div className="mt-10 flex flex-wrap gap-3">
+          <Reveal className="mt-10 flex flex-wrap gap-3" delay={0.3}>
             <Button to="/launch" variant="primary" size="lg" arrow>
               Launch a company
             </Button>
             <a href={docsUrl} target="_blank" rel="noreferrer" className="inline-flex h-12 items-center gap-1.5 rounded-full border border-line-2 px-6 text-[15px] font-semibold hover-device:hover:bg-hover">
               Read the docs <ArrowUpRight className="size-4" />
             </a>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

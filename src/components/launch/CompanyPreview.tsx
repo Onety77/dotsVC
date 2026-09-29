@@ -1,9 +1,14 @@
+import { m } from 'motion/react'
 import { DotGlyph } from '@/components/dots/DotGlyph'
+import { EASE_OUT, VIEWPORT } from '@/lib/motion'
 import { RunwayDots } from '@/components/dots/RunwayDots'
 import { sol } from '@/lib/format'
 import { routing, type LaunchDraft } from '@/lib/launch'
 
-/** The company as it's being built, updating as you type. */
+/**
+ * The company as it's being built, updating as you type: the glyph re-forms with each letter of
+ * the ticker, the fee bar grows in, and the runway dots flow when the budget changes.
+ */
 export function CompanyPreview({ d }: { d: LaunchDraft }) {
   const ticker = d.ticker || 'TICKER'
   // what 30 SOL of treasury would buy at this budget, to make the rule tangible
@@ -14,7 +19,7 @@ export function CompanyPreview({ d }: { d: LaunchDraft }) {
         <DotGlyph seed={ticker} status="active" size={56} src={d.image} />
         <div className="min-w-0">
           <p className="label">Your company</p>
-          <p className="mt-1 truncate text-[20px] font-semibold tracking-[-0.02em]">{d.name || 'Unnamed company'}</p>
+          <p className={`mt-1 truncate text-[20px] font-semibold tracking-[-0.02em] transition-colors ${d.name ? '' : 'text-ink-3'}`}>{d.name || 'Unnamed company'}</p>
           <p className="font-mono text-[13px] text-ink-3">${ticker}</p>
         </div>
       </div>
@@ -34,8 +39,16 @@ export function CompanyPreview({ d }: { d: LaunchDraft }) {
       <div className="border-b border-line p-5">
         <p className="label">Creator fees go to</p>
         <div className="mt-3 flex h-2.5 gap-[3px]">
-          {routing.map((r) => (
-            <span key={r.k} className={`${r.cls} rounded-full`} style={{ flexGrow: r.v, flexBasis: 0 }} />
+          {routing.map((r, i) => (
+            <m.span
+              key={r.k}
+              className={`${r.cls} origin-left rounded-full`}
+              style={{ flexGrow: r.v, flexBasis: 0 }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={VIEWPORT}
+              transition={{ duration: 0.7, delay: 0.1 + i * 0.12, ease: EASE_OUT }}
+            />
           ))}
         </div>
         <ul className="mt-3 grid gap-1.5 text-[13px]">

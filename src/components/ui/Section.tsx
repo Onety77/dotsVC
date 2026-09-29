@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
+import { Item, Stagger } from '@/components/motion/Reveal'
 
 /** One section-head pattern everywhere: mono label, headline, optional sub and action. */
 export function SectionHead({
@@ -18,16 +19,18 @@ export function SectionHead({
   className?: string
 }) {
   return (
-    <div className={cn('flex flex-col gap-5 md:flex-row md:items-end md:justify-between', className)}>
+    <Stagger className={cn('flex flex-col gap-5 md:flex-row md:items-end md:justify-between', className)}>
       <div className="max-w-3xl">
-        {label && <p className="label">{label}</p>}
-        <h2 id={id} className={cn('text-h2 font-semibold', label && 'mt-4')}>
-          {title}
-        </h2>
-        {sub && <p className="mt-4 max-w-[58ch] text-lead text-ink-2">{sub}</p>}
+        {label && <Item as="p" className="label">{label}</Item>}
+        <Item>
+          <h2 id={id} className={cn('text-h2 font-semibold', label && 'mt-4')}>
+            {title}
+          </h2>
+        </Item>
+        {sub && <Item as="p" className="mt-4 max-w-[58ch] text-lead text-ink-2">{sub}</Item>}
       </div>
-      {action && <div className="shrink-0">{action}</div>}
-    </div>
+      {action && <Item className="shrink-0">{action}</Item>}
+    </Stagger>
   )
 }
 

@@ -1,29 +1,33 @@
 import { Link } from 'react-router-dom'
 import type { Company, Listing } from '@/types'
 import { cn } from '@/lib/cn'
-import { countdown, sol, usd } from '@/lib/format'
+import { sol, usd } from '@/lib/format'
+import { Countdown } from '@/components/motion/Countdown'
+import { Rolling } from '@/components/motion/Rolling'
 import { DotGlyph } from '@/components/dots/DotGlyph'
 import { RunwayDots } from '@/components/dots/RunwayDots'
 import { Button } from '@/components/ui/Button'
 
 /**
  * A company for sale: why it failed, how long it has, and the auction.
- * The clock is static here; it ticks in the motion pass.
+ * The clock ticks; when you bid, the top bid rolls up to yours and says so.
  */
 export function ListingCard({
   listing,
   company,
-  now,
+  myBid,
   onBid,
   className,
 }: {
   listing: Listing
   company: Company
-  now: number
+  /** your bid, if you placed one this session */
+  myBid?: number
   onBid?: (companyId: string) => void
   className?: string
 }) {
-  const soon = new Date(listing.auctionEndsAt).getTime() - now < 6 * 3600_000
+  const top = Math.max(listing.topBidSol ?? 0, myBid ?? 0)
+  const mine = myBid !== undefined && myBid >= top
   return (
     <article className={cn('flex flex-col rounded-card border border-line bg-surface p-5', className)}>
       <div className="flex items-start justify-between gap-3">
@@ -47,12 +51,16 @@ export function ListingCard({
           <dd className="mt-1 font-mono text-sm">{usd(company.marketCapUsd)}</dd>
         </div>
         <div>
-          <dt className="text-[12px] text-ink-3">{listing.topBidSol ? 'Top bid' : 'Reserve'}</dt>
-          <dd className="mt-1 font-mono text-sm">{sol(listing.topBidSol ?? listing.reservePriceSol, 0)}</dd>
+          <dt className="text-[12px] text-ink-3">{mine ? 'Top bid · you' : top ? 'Top bid' : 'Reserve'}</dt>
+          <dd className={cn('mt-1 font-mono text-sm transition-colors duration-500', mine && 'text-lime-text')}>
+            <Rolling value={top || listing.reservePriceSol} text={sol(top || listing.reservePriceSol, 0)} />
+          </dd>
         </div>
         <div>
           <dt className="text-[12px] text-ink-3">Ends in</dt>
-          <dd className={cn('mt-1 font-mono text-sm tabular', soon && 'text-red')}>{countdown(listing.auctionEndsAt, now)}</dd>
+          <dd className="mt-1 text-sm">
+            <Countdown to={listing.auctionEndsAt} />
+          </dd>
         </div>
       </dl>
       {onBid && (

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/cn'
+import { Item, Stagger } from '@/components/motion/Reveal'
 
 /** The top of every app page: label, title, description, actions, and an optional stats row. */
 export function PageHeader({
@@ -19,17 +20,19 @@ export function PageHeader({
 }) {
   return (
     <div className={cn('border-b border-line', className)}>
-      <div className="wrap pt-10 pb-8 lg:pt-14 lg:pb-10">
+      <Stagger immediate gap={0.06} className="wrap pt-10 pb-8 lg:pt-14 lg:pb-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0">
-            {label && <div className="label">{label}</div>}
-            <h1 className={cn('text-h1 font-semibold', label && 'mt-4')}>{title}</h1>
-            {description && <p className="mt-3 max-w-[60ch] text-lead text-ink-2">{description}</p>}
+            {label && <Item className="label">{label}</Item>}
+            <Item>
+              <h1 className={cn('text-h1 font-semibold', label && 'mt-4')}>{title}</h1>
+            </Item>
+            {description && <Item as="p" className="mt-3 max-w-[60ch] text-lead text-ink-2">{description}</Item>}
           </div>
-          {actions && <div className="flex shrink-0 flex-wrap gap-2">{actions}</div>}
+          {actions && <Item className="flex shrink-0 flex-wrap gap-2">{actions}</Item>}
         </div>
-        {children}
-      </div>
+        {children && <Item>{children}</Item>}
+      </Stagger>
     </div>
   )
 }

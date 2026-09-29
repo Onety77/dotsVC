@@ -2,8 +2,11 @@ import { useState } from 'react'
 import { Search } from 'lucide-react'
 import type { CompanyStatus } from '@/types'
 // NORA: replace with indexer queries.
-import { companies, holdco, networkStats } from '@/data/network'
+import { companies, networkStats } from '@/data/network'
 import { count, sol, usd } from '@/lib/format'
+import { useHoldcoTreasury } from '@/lib/live'
+import { CountUp } from '@/components/motion/CountUp'
+import { Rolling } from '@/components/motion/Rolling'
 import { useDemoState } from '@/lib/hooks'
 import { Button } from '@/components/ui/Button'
 import { Notice } from '@/components/ui/Notice'
@@ -24,6 +27,8 @@ const sorters: Record<Sort, (a: (typeof companies)[number], b: (typeof companies
 
 export function Network() {
   const state = useDemoState()
+  // ticks as fee pulses in the map below reach the holdco
+  const holdcoSol = useHoldcoTreasury()
   const [filter, setFilter] = useState<Filter>('all')
   const [sort, setSort] = useState<Sort>('runway')
   const [q, setQ] = useState('')
@@ -50,11 +55,11 @@ export function Network() {
       >
         <Figures
           items={[
-            { k: 'Holdco treasury', v: sol(holdco.treasurySol) },
-            { k: 'Companies', v: count(networkStats.companies) },
-            { k: 'Creator fees, 30 days', v: usd(networkStats.fees30dUsd) },
-            { k: 'Average runway', v: `${networkStats.avgRunwayDays} days` },
-            { k: 'In receivership', v: count(networkStats.inReceivership), tone: 'red' },
+            { k: 'Holdco treasury', v: <Rolling value={holdcoSol} text={sol(holdcoSol, 3)} /> },
+            { k: 'Companies', v: <CountUp value={networkStats.companies} format={(n) => count(Math.round(n))} /> },
+            { k: 'Creator fees, 30 days', v: <CountUp value={networkStats.fees30dUsd} format={usd} /> },
+            { k: 'Average runway', v: <CountUp value={networkStats.avgRunwayDays} format={(n) => `${Math.round(n)} days`} /> },
+            { k: 'In receivership', v: <CountUp value={networkStats.inReceivership} format={(n) => count(Math.round(n))} />, tone: 'red' },
           ]}
         />
       </PageHeader>

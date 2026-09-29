@@ -17,7 +17,7 @@ const sizes: Record<Size, string> = {
 
 export const buttonClass = (variant: Variant = 'secondary', size: Size = 'md', className?: string) =>
   cn(
-    'inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-[background-color,filter,color] duration-150 active:translate-y-px disabled:pointer-events-none disabled:opacity-40',
+    'group/btn inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-[background-color,filter,color,scale] duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 [&>svg:last-child]:transition-transform [&>svg:last-child]:duration-300 hover-device:hover:[&>svg.lucide-arrow-right:last-child]:translate-x-0.5',
     variants[variant],
     sizes[size],
     className,

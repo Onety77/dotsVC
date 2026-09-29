@@ -1,8 +1,10 @@
-import { useMemo, useState, type PointerEvent } from 'react'
+import { useId, useMemo, useRef, useState, type PointerEvent } from 'react'
+import { m, useInView, useReducedMotion } from 'motion/react'
 import type { Company } from '@/types'
 import { cn } from '@/lib/cn'
 import { pct, price } from '@/lib/format'
 import { pricePath } from '@/lib/seeded'
+import { EASE_OUT, SPRING_UI } from '@/lib/motion'
 
 const ranges = [
   { id: '1D', points: 48, scale: 1 },
@@ -16,11 +18,17 @@ const H = 280
 
 /**
  * Price over time, with a readout that follows the pointer.
+ * Motion: the line draws left to right when first seen and on every range change; a live dot
+ * breathes at the latest price; the range pill slides.
  * NORA: sample path generated from the company's price and 24h change; feed real candles/points.
  */
 export function PriceChart({ company, className }: { company: Company; className?: string }) {
   const [range, setRange] = useState<(typeof ranges)[number]['id']>('1D')
   const [hover, setHover] = useState<number | null>(null)
+  const uid = useId()
+  const box = useRef<HTMLDivElement>(null)
+  const seen = useInView(box, { once: true, margin: '0px 0px -10% 0px' })
+  const reduced = useReducedMotion()
   const r = ranges.find((x) => x.id === range)!
   const change = company.change24h * r.scale
   const data = useMemo(() => pricePath(`${company.id}-${range}`, company.priceUsd, change, r.points), [company, range, change, r.points])
@@ -54,17 +62,19 @@ export function PriceChart({ company, className }: { company: Company; className
               role="radio"
               aria-checked={range === x.id}
               onClick={() => setRange(x.id)}
-              className={cn('h-8 rounded-full px-3 font-mono text-[12px] transition-colors', range === x.id ? 'bg-ink text-bg' : 'text-ink-3 hover-device:hover:text-ink')}
+              className={cn('relative h-8 rounded-full px-3 font-mono text-[12px] transition-colors', range === x.id ? 'text-bg' : 'text-ink-3 hover-device:hover:text-ink')}
             >
-              {x.id}
+              {range === x.id && <m.span layoutId={`range-${uid}`} className="absolute inset-0 rounded-full bg-ink" transition={SPRING_UI} />}
+              <span className="relative">{x.id}</span>
             </button>
           ))}
         </div>
       </div>
+      <div ref={box} className="relative mt-6">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
-        className="mt-6 block h-56 w-full touch-none sm:h-64"
+        className="block h-56 w-full touch-none sm:h-64"
         onPointerMove={onMove}
         onPointerLeave={() => setHover(null)}
         role="img"
@@ -75,16 +85,38 @@ export function PriceChart({ company, className }: { company: Company; className
             <stop offset="0" stopColor={up ? 'var(--lime)' : 'var(--red)'} stopOpacity="0.22" />
             <stop offset="1" stopColor={up ? 'var(--lime)' : 'var(--red)'} stopOpacity="0" />
           </linearGradient>
+          {/* the wipe that draws the line */}
+          <clipPath id={`wipe-${uid}`}>
+            <m.rect key={range} x="0" y="0" height={H} initial={reduced ? false : { width: 0 }} animate={seen || reduced ? { width: W } : { width: 0 }} transition={{ duration: 1.3, ease: EASE_OUT }} width={W} />
+          </clipPath>
         </defs>
         {[0.25, 0.5, 0.75].map((f) => (
           <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="var(--line)" vectorEffect="non-scaling-stroke" />
         ))}
-        <path d={`${line} L${W},${H} L0,${H} Z`} fill={`url(#fill-${company.id})`} />
-        <path d={line} fill="none" stroke={up ? 'var(--lime-text)' : 'var(--red)'} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+        <g clipPath={`url(#wipe-${uid})`}>
+          <path d={`${line} L${W},${H} L0,${H} Z`} fill={`url(#fill-${company.id})`} />
+          <path d={line} fill="none" stroke={up ? 'var(--lime-text)' : 'var(--red)'} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+        </g>
         {hover !== null && (
           <line x1={x(hover)} x2={x(hover)} y1="0" y2={H} stroke="var(--ink)" strokeOpacity="0.35" vectorEffect="non-scaling-stroke" />
         )}
       </svg>
+      {/* dots drawn in HTML so they stay round on the stretched chart */}
+      {hover !== null && (
+        <span aria-hidden className="pointer-events-none absolute size-2.5 -translate-1/2 rounded-full border-2 border-surface bg-ink" style={{ left: `${(x(hover) / W) * 100}%`, top: `${(y(data[hover]) / H) * 100}%` }} />
+      )}
+      {hover === null && (
+        <m.span
+          key={range}
+          aria-hidden
+          className={cn('live-dot pointer-events-none absolute size-2 -translate-1/2 rounded-full', up ? 'bg-lime-text text-lime-text' : 'bg-red text-red')}
+          style={{ left: '100%', top: `${(y(data[data.length - 1]) / H) * 100}%` }}
+          initial={reduced ? false : { opacity: 0 }}
+          animate={seen || reduced ? { opacity: 1 } : undefined}
+          transition={{ duration: 0.3, delay: 1.1 }}
+        />
+      )}
+      </div>
       <div className="mt-2 flex justify-between font-mono text-[11px] text-ink-4">
         <span>{price(min)}</span>
         <span>{range === '1D' ? '24 hours' : range === '1W' ? '7 days' : range === '1M' ? '30 days' : 'Since launch'}</span>

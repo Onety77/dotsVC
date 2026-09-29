@@ -1,6 +1,6 @@
 # Handoff: DOTS web (v1, static)
 
-The whole UI is built and runs on fictional sample data. Nothing moves yet; that's deliberate, and the motion plan below says what should move next. No component fetches anything. Data comes in through imports from `src/data/` and props.
+The whole UI is built, moves, and runs on fictional sample data. No component fetches anything. Data comes in through imports from `src/data/` and props.
 
 ## Run it
 
@@ -51,55 +51,56 @@ Types are in `src/types/index.ts` (`Company`, `Agent`, `Job`, `Artifact`, `Listi
 
 ## Wiring
 
-- **Wiring points:** search for `NORA:`. There are 24 markers, each a spot for real data or a real transaction.
+- **Wiring points:** search for `NORA:`. There are 30 markers, each a spot for real data or a real transaction.
 - **Wallet:** `Shell` holds a mock wallet (`wallet.ts` → `useWallet()`); replace it with the Solana wallet adapter. The launch and bid flows already ask for a wallet before signing.
 - **States:** every data view has loading, empty and error designs. Preview them with `?state=loading|empty|error` (`useDemoState()` in `lib/hooks.ts`), and replace that hook with your query status.
 - **Time:** sample data is pinned to `sampleNow` (`data/network.ts`) so countdowns are stable. Use `Date.now()` when live.
 - **Fee routing** (80% treasury, 10% holdco, 10% creator) in `lib/launch.ts` is a placeholder until the program defines it.
 - **The runway rule** (pause under 21 days, receivership at zero) is described in copy and in `critical()` in `lib/format.ts`. Keep them in sync with the program.
 
-## Motion plan (next session)
+## Motion
 
-The layout was designed so that each of these can be added without changing structure. Recommended stack: `motion` (LazyMotion + `m.*`), expo-out easing at 150–600ms, and springs for state changes. Honour `prefers-reduced-motion` everywhere by showing end states and stopping loops.
+The principle, the signature moments and the supporting system are in `DESIGN.md` → MOTION. Here's where each part lives.
 
-**Signature motion (the product explaining itself)**
-1. **Field: the network breathes.**
-   - Active dots pulse very slowly, and each has its own phase from its seed.
-   - Every few seconds a small lime *fee pulse* travels along a line from a company to the holdco, so creator fees are visibly flowing in.
-   - The holdco dot swells slightly when a pulse arrives.
-2. **Field: distress drifts.** On first view, receivership dots start on their normal ring and drift out to the dashed outer ring, and their line visibly snaps (a stroke-dash cut). This happens once, not on a loop.
-3. **Runway dots drain.**
-   - On view, the dots fill left to right up to the runway.
-   - On distressed companies the last lit dot blinks red, slowly.
-   - In the launch preview the dots re-fill as the daily budget changes.
-4. **Countdowns tick.** Auction clocks count down live (digit roll on seconds), and the last six hours turn red. This is already coloured; it only needs a timer.
-5. **Lifecycle diagrams play.** Each of the four stage SVGs on Home animates its own verb when scrolled into view:
-   - **Launch:** a dot appears.
-   - **Hire:** an agent dot attaches.
-   - **Earn:** fees flow in.
-   - **Survive, or be sold:** a dot fades, goes red and moves to a new owner.
-6. **Glyph reveal.** `DotGlyph` dots pop in from the centre outwards (staggered by distance) the first time a company appears, and the status dot lands last.
+**Stack and tokens**
+- `motion` (LazyMotion `strict` + `domMax`, so write `m.*`, never `motion.*`) and `MotionConfig reducedMotion="user"`, both in `App.tsx`.
+- Tokens are in `src/lib/motion.ts`: eases, springs (`SPRING_POP` is a dot landing) and `VIEWPORT`.
+- CSS keyframes (breathe, flatline, heartbeat, ping `.live-dot`, dot-wave, caret, glyph ripple) sit at the bottom of `src/styles/index.css`, with the reduced-motion guard.
 
-**Supporting motion**
-- **Page entrances:**
-  - The header stays still.
-  - The page head rises in, then sections stagger at 60ms in reading order.
-  - Figures count up once, rounded to their final precision.
-- **Price chart:** the line draws on first view and when switching ranges. The hover readout follows with a spring.
-- **Agent console:** the latest log line types in, and job status pills cross-fade when they change.
-- **Lists:** table rows and listing cards glide to their new places when you filter or sort (`layout`).
-- **Segmented and nav:** the active pill slides between options (`layoutId`).
-- **Launch flow:**
-  - Steps slide horizontally.
-  - The step dots fill.
-  - The preview card updates with small spring settles.
-  - On success, the new company's dot flies into a mini network.
-- **Bid dialog:** the sheet or modal rises in. On success the company glyph's red centre dot turns lime.
-- **Theme switch:** a circular View Transition reveal from the switch.
+**Primitives** (`src/components/motion/`)
+
+| Component | What it is |
+|---|---|
+| `Reveal`, `Stagger`, `Item` | Entrances |
+| `CountUp` | Numbers that settle, then glide |
+| `Rolling` | Digit-by-digit characters |
+| `Countdown` | Ticking auction clock |
+| `MaskLine`, `DotPeriod` | Headline lines and the dot full stop |
+| `DotsLoader` | The logo's hopping dot |
+| `DotBurst` | Celebration |
+
+**Live stores** (`src/lib/live.ts`)
+- **`useNow()`:** one shared one-second clock for every countdown and "ago". It starts at `sampleNow`. **When wiring, return `Date.now()`.**
+- **`useHoldcoTreasury()` / `addToHoldco()`:** the holdco treasury. Fee pulses in the Field add to it. **When wiring, subscribe to the holdco account** and let pulses be purely visual (or drive them from real fee events).
+
+**Simulated activity to replace** (all marked `NORA:`)
+
+| Where | What's simulated |
+|---|---|
+| `NetworkField` | Fee pulses, picked by 30-day fees |
+| `AgentConsole` | New log lines (`nextAction`); stream real agent actions instead |
+| `Launch` | The newcomer company placed in the success map |
+
+**Pausing and performance**
+- Loops pause when their element is off screen (`useInView`) or the tab is hidden.
+- The Field animates attributes on a few circles at a time.
+- `DotGrid` draws on a canvas only while the pointer moves over the hero.
 
 ## Checks run on this build
 
 - **Sweep:** 13 routes (including every `?state=`, 404 and unknown company) at 360, 390, 768, 1024 and 1440, in dark and light. There is no horizontal overflow and there are no console errors.
-- **Launch flow:** driven end to end at 390 and 1440, covering validation, wallet connect, signing and success.
-- **Bid flow:** driven end to end at 390 and 1440, covering the minimum-bid error, the plan requirement, the bid itself and "My bids".
+- **Launch flow:** driven end to end at 390 and 1440, covering validation, wallet connect, signing and success (the birth map).
+- **Bid flow:** driven end to end at 390 and 1440, covering the minimum-bid error, the plan requirement, the bid itself (the rescue burst) and "My bids" (the top bid rolls up).
+- **Motion frames** captured for the hero intro, the lifecycle loops, the agent log, the theme reveal and phone.
+- **Reduced motion:** the end state renders at once, with no errors.
 - **Static checks:** `tsc -b`, `oxlint` and `vite build` all pass.

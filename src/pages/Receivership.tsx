@@ -7,6 +7,7 @@ import { useDemoState } from '@/lib/hooks'
 import { Notice } from '@/components/ui/Notice'
 import { Figures, PageHeader } from '@/components/ui/PageHeader'
 import { Segmented } from '@/components/ui/Segmented'
+import { CountUp } from '@/components/motion/CountUp'
 import { BidDialog } from '@/components/company/BidDialog'
 import { ListingCard } from '@/components/company/ListingCard'
 import { DotGlyph } from '@/components/dots/DotGlyph'
@@ -32,19 +33,22 @@ export function Receivership() {
   const bidFor = params.get('bid')
   const openBid = (id: string) => setParams({ bid: id })
   const closeBid = () => setParams({}, { replace: true })
+  // keep the last company while the dialog animates out
+  const [last, setLast] = useState(bidFor)
+  if (bidFor && bidFor !== last) setLast(bidFor)
 
   const source = state === 'empty' ? [] : listings
-  const totalTop = source.reduce((a, l) => a + (l.topBidSol ?? 0), 0)
+  const totalTop = source.reduce((a, l) => a + Math.max(l.topBidSol ?? 0, myBids.find((b) => b.companyId === l.companyId)?.amountSol ?? 0), 0)
 
   return (
     <>
       <PageHeader label="Receivership" title="Companies for sale" description="Companies that ran out of runway, sold at auction with their treasury, community and brand. Bring a plan and an agent, and turn one around.">
         <Figures
           items={[
-            { k: 'For sale', v: count(source.length), tone: 'red' },
-            { k: 'Rescue capital waiting', v: sol(networkStats.rescueCapitalSol, 0) },
-            { k: 'Live bids', v: count(source.reduce((a, l) => a + l.bids, 0)) },
-            { k: 'Top bids, total', v: sol(totalTop, 0) },
+            { k: 'For sale', v: <CountUp value={source.length} format={(n) => count(Math.round(n))} />, tone: 'red' },
+            { k: 'Rescue capital waiting', v: <CountUp value={networkStats.rescueCapitalSol} format={(n) => sol(n, 0)} /> },
+            { k: 'Live bids', v: <CountUp value={source.reduce((a, l) => a + l.bids, 0) + myBids.length} format={(n) => count(Math.round(n))} /> },
+            { k: 'Top bids, total', v: <CountUp value={totalTop} format={(n) => sol(n, 0)} /> },
           ]}
         />
       </PageHeader>
@@ -72,7 +76,7 @@ export function Receivership() {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2 [&>*]:min-w-0">
                   {source.map((l) => (
-                    <ListingCard key={l.companyId} listing={l} company={getCompany(l.companyId)!} now={sampleNow} onBid={openBid} />
+                    <ListingCard key={l.companyId} listing={l} company={getCompany(l.companyId)!} myBid={myBids.find((b) => b.companyId === l.companyId)?.amountSol} onBid={openBid} />
                   ))}
                 </div>
               )
@@ -149,11 +153,11 @@ export function Receivership() {
       </div>
 
       <BidDialog
-        key={bidFor ?? 'none'}
+        key={last ?? 'none'}
         open={Boolean(bidFor)}
         onClose={closeBid}
-        company={bidFor ? getCompany(bidFor) : undefined}
-        listing={listings.find((l) => l.companyId === bidFor)}
+        company={last ? getCompany(last) : undefined}
+        listing={listings.find((l) => l.companyId === last)}
         onSubmit={async (b) => {
           // NORA: sign + send to the auction program.
           await wait(900)

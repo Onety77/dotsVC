@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
+import { AnimatePresence, m } from 'motion/react'
+import { EASE_OUT, SPRING_UI } from '@/lib/motion'
 import { cn } from '@/lib/cn'
 import { Logo } from '@/components/ui/Logo'
 import { Button } from '@/components/ui/Button'
@@ -30,7 +32,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-line bg-[color-mix(in_srgb,var(--bg)_86%,transparent)] backdrop-blur-md">
       <div className="wrap flex h-16 items-center gap-8">
         <Link to="/" aria-label="DOTS home" className="rounded-md">
-          <Logo />
+          <Logo lively />
         </Link>
         <nav aria-label="Main" className="hidden md:block">
           <ul className="flex items-center gap-1">
@@ -38,11 +40,14 @@ export function Header() {
               <li key={n.to}>
                 <NavLink
                   to={n.to}
-                  className={({ isActive }) =>
-                    cn('flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors', isActive ? 'bg-hover text-ink' : 'text-ink-2 hover-device:hover:text-ink')
-                  }
+                  className={({ isActive }) => cn('relative flex h-9 items-center rounded-full px-3.5 text-sm font-medium transition-colors', isActive ? 'text-ink' : 'text-ink-2 hover-device:hover:text-ink')}
                 >
-                  {n.label}
+                  {({ isActive }) => (
+                    <>
+                      {isActive && <m.span layoutId="nav-pill" className="absolute inset-0 rounded-full bg-hover" transition={SPRING_UI} />}
+                      <span className="relative">{n.label}</span>
+                    </>
+                  )}
                 </NavLink>
               </li>
             ))}
@@ -70,12 +75,20 @@ export function Header() {
         </div>
       </div>
 
+      <AnimatePresence>
       {open && (
-        <div id="mobile-menu" className="fixed inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-bg md:hidden">
+        <m.div
+          id="mobile-menu"
+          className="fixed inset-x-0 top-16 bottom-0 z-40 flex flex-col bg-bg md:hidden"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }}
+          transition={{ duration: 0.3, ease: EASE_OUT }}
+        >
           <nav aria-label="Main" className="wrap flex-1 pt-6">
             <ul className="flex flex-col">
-              {[{ to: '/', label: 'Home' }, ...nav].map((n) => (
-                <li key={n.to} className="border-b border-line">
+              {[{ to: '/', label: 'Home' }, ...nav].map((n, i) => (
+                <m.li key={n.to} className="border-b border-line" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.04 + i * 0.05, ease: EASE_OUT }}>
                   <NavLink to={n.to} end className={({ isActive }) => cn('flex h-16 items-center justify-between text-[28px] font-semibold tracking-[-0.03em]', !isActive && 'text-ink-2')}>
                     {({ isActive }) => (
                       <>
@@ -84,7 +97,7 @@ export function Header() {
                       </>
                     )}
                   </NavLink>
-                </li>
+                </m.li>
               ))}
               <li className="border-b border-line">
                 <a href={docsUrl} target="_blank" rel="noreferrer" className="flex h-16 items-center gap-2 text-[28px] font-semibold tracking-[-0.03em] text-ink-2">
@@ -99,8 +112,9 @@ export function Header() {
               {address ? <span className="font-mono text-[13px]">{address}</span> : 'Connect wallet'}
             </Button>
           </div>
-        </div>
+        </m.div>
       )}
+      </AnimatePresence>
     </header>
   )
 }

@@ -74,7 +74,38 @@ DOTS handles other people's money and companies' lives, so the frame must look l
 
 **THEMES:** Dark by default (the genre's home) and a designed light mode, switched from the header.
 
-**MOTION:** None in this pass. The layout is designed for it (see HANDOFF.md, "Motion plan").
+**MOTION:** *Only living things move.* Every movement shows the mechanism, and motion itself encodes status:
+- Active companies breathe (each at its own rhythm).
+- Paused companies hold still.
+- Companies in receivership slowly fade.
+
+The signature moments:
+1. **The network assembles, then some companies fail** (hero and `/network`). Rings draw and the holdco lands. Lines reach out and companies pop in, strongest first. Then the companies whose runway hit zero turn red, drift out to the receivership ring, and their line to the holdco snaps with a red spark.
+2. **Fees flow.** Lime pulses travel from earning companies into the holdco, weighted by fees; hover a company to watch its own. Each arrival makes the holdco ripple and ticks the live holdco treasury, both beside the map and in the network page's figures. The heartbeat of the network is its income.
+3. **The lifecycle diagrams play their verbs.**
+   - **Launch:** a company is born at the end of a dotted line.
+   - **Hire:** the agent orbits while work flows in and ships out.
+   - **Earn:** fees drop into runway dots and burn takes them back.
+   - **Survive, or be sold:** red, drift, snap, a new owner, lime again.
+4. **The CEO works in front of you.** New agent actions type themselves into the log, and shipping jobs show the logo's hopping-dot loader.
+5. **Rescue and birth.**
+   - A rescue bid turns the company's red heart lime and bursts into dots.
+   - A launched company is born into a live network map, with ripples and a lime label.
+
+The supporting system:
+- **Headlines** land line by line, and full stops are dots that drop in with a bounce.
+- **Numbers** count up once; the holdco treasury and auction clocks roll digit by digit.
+- **Runway dots** fill left to right and flow outward when changed. The last week of a critical company beats like a heart.
+- **Glyphs** pop in from the centre and re-form in a ripple as you type a ticker.
+- **The chart** draws left to right with a live dot at the end.
+- **Pills** slide (nav, filters, ranges, theme), and table rows glide on filter and sort.
+- **Dialogs** rise, and the sheet slides up on phones.
+- **Launch steps** slide in the direction of travel.
+- **The theme** spreads in a circle from the switch.
+- **The logo** turns a quarter on each navigation.
+- **The hero's dot grid** wakes under the cursor.
+
+Loops pause off screen and in hidden tabs. Under reduced motion everything shows its end state, still (`MotionConfig reducedMotion="user"`, `useReducedMotion` in every loop, and a CSS guard for keyframes). Tokens are in `src/lib/motion.ts`.
 
 **ASSUMPTIONS:**
 - Companies, figures, bids and agents are fictional sample data (`NORA:`). No real coins or projects are represented.

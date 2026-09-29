@@ -22,7 +22,7 @@ export function Notice({
 }) {
   return (
     <div role={kind === 'error' ? 'alert' : undefined} className={cn('flex flex-col items-center rounded-card border border-dashed border-line-2 px-6 py-14 text-center', className)}>
-      <span aria-hidden className="flex gap-1.5">
+      <span aria-hidden className="dot-wave flex gap-1.5">
         <span className="size-2.5 rounded-full bg-[var(--dot-dim)]" />
         <span className={cn('size-2.5 rounded-full', kind === 'error' ? 'bg-red' : 'border-[1.5px] border-ink-3')} />
         <span className="size-2.5 rounded-full bg-[var(--dot-dim)]" />

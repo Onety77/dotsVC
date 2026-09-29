@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Company, Listing } from '@/types'
 import { sol } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Dialog } from '@/components/ui/Dialog'
 import { DotGlyph } from '@/components/dots/DotGlyph'
 import { useWallet } from '@/components/layout/wallet'
+import { DotBurst } from '@/components/motion/DotBurst'
+import { DotsLoader } from '@/components/motion/DotsLoader'
 
 const agentOptions = [
   { id: 'bring', label: 'Bring my own agent', note: 'Configure it after the auction settles.' },
@@ -37,6 +39,13 @@ export function BidDialog({
   const [agent, setAgent] = useState<string>('bring')
   const [errors, setErrors] = useState<{ amount?: string; plan?: string }>({})
   const [phase, setPhase] = useState<'form' | 'sending' | 'done'>('form')
+  // the rescue moment: the company's heart goes from red to lime a beat after the bid lands
+  const [rescued, setRescued] = useState(false)
+  useEffect(() => {
+    if (phase !== 'done') return
+    const t = window.setTimeout(() => setRescued(true), 450)
+    return () => window.clearTimeout(t)
+  }, [phase])
 
   if (!company || !listing) return null
 
@@ -68,15 +77,24 @@ export function BidDialog({
             Connect wallet to bid
           </Button>
         ) : (
-          <Button variant="primary" className="w-full" onClick={submit} disabled={phase === 'sending'}>
-            {phase === 'sending' ? 'Waiting for signature…' : `Place bid of ${sol(Number(amount) || 0, 0)}`}
+          <Button variant="primary" className="w-full disabled:opacity-100" onClick={submit} disabled={phase === 'sending'}>
+            {phase === 'sending' ? (
+              <>
+                <DotsLoader className="text-on-lime" accent="currentColor" label="Waiting for signature" /> Waiting for signature…
+              </>
+            ) : (
+              `Place bid of ${sol(Number(amount) || 0, 0)}`
+            )}
           </Button>
         )
       }
     >
       {phase === 'done' ? (
         <div className="flex flex-col items-center py-6 text-center">
-          <DotGlyph seed={company.ticker} status="active" size={64} />
+          <span className="relative">
+            <DotGlyph seed={company.ticker} status={rescued ? 'active' : 'distressed'} size={64} />
+            {rescued && <DotBurst radius={70} />}
+          </span>
           <p className="mt-5 text-[17px] font-semibold">You’re the top bidder for {company.name}.</p>
           <p className="mt-1.5 max-w-[40ch] text-[15px] text-ink-2">We’ll tell you if you’re outbid. If you win, the company leaves receivership with you as its new owner.</p>
         </div>

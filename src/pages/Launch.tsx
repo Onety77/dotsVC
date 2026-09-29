@@ -1,5 +1,11 @@
-import { useEffect, useState, type ChangeEvent } from 'react'
-import { Check, ImagePlus, LoaderCircle } from 'lucide-react'
+import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { Check, ImagePlus } from 'lucide-react'
+import { AnimatePresence, m } from 'motion/react'
+import type { Company } from '@/types'
+import { companies } from '@/data/network'
+import { EASE_OUT, SPRING_POP } from '@/lib/motion'
+import { DotsLoader } from '@/components/motion/DotsLoader'
+import { NetworkField } from '@/components/dots/NetworkField'
 import { cn } from '@/lib/cn'
 import { sol } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
@@ -25,6 +31,28 @@ const blank: LaunchDraft = { name: '', ticker: '', description: '', x: '', teleg
 // NORA: the two transactions a launch sends. Report progress by index; resolve with the new company's id.
 const TX = ['Create the coin on Pump.fun', 'Create the company, its treasury and mandate', 'Hire the agent']
 
+/** The company you just launched, as the network sees it. NORA: use the new company's real record. */
+function newcomer(d: LaunchDraft): Company {
+  const runway = Math.round(30 / d.budgetSol)
+  return {
+    ...companies[0],
+    id: 'new',
+    name: d.name,
+    ticker: d.ticker,
+    tagline: d.description,
+    status: 'active',
+    runwayDays: runway,
+    treasurySol: 30,
+    burnSolPerDay: d.budgetSol,
+    fees30dUsd: 1,
+    agent: { name: d.agentName || 'Agent', mission: d.mission, state: 'working', log: [] },
+    jobs: [],
+    artifacts: [],
+    timeline: [],
+    image: d.image,
+  }
+}
+
 export function Launch() {
   const { address, connect } = useWallet()
   const [step, setStep] = useState(0)
@@ -32,6 +60,13 @@ export function Launch() {
   const [show, setShow] = useState(false)
   const [progress, setProgress] = useState(-1) // -1 not started, TX.length = done
   const patch = (p: Partial<LaunchDraft>) => setD((x) => ({ ...x, ...p }))
+  // steps slide in the direction of travel
+  const [shownStep, setShownStep] = useState(step)
+  const [dir, setDir] = useState(1)
+  if (step !== shownStep) {
+    setDir(step > shownStep ? 1 : -1)
+    setShownStep(step)
+  }
 
   // release the preview URL when the image changes
   useEffect(() => () => (d.image ? URL.revokeObjectURL(d.image) : undefined), [d.image])
@@ -68,6 +103,13 @@ export function Launch() {
   }
 
   const done = progress === TX.length
+  // bring the new company's arrival into view
+  const birth = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!done) return
+    const t = window.setTimeout(() => birth.current?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }), 350)
+    return () => window.clearTimeout(t)
+  }, [done])
 
   return (
     <>
@@ -81,6 +123,16 @@ export function Launch() {
           <StepDots steps={STEPS} current={done ? STEPS.length : step} onSelect={progress < 0 ? setStep : undefined} />
 
           <div className="mt-10">
+            <AnimatePresence mode="wait" initial={false} custom={dir}>
+            <m.div
+              key={step}
+              custom={dir}
+              variants={{ enter: (d: number) => ({ opacity: 0, x: d * 28 }), show: { opacity: 1, x: 0 }, leave: (d: number) => ({ opacity: 0, x: d * -20 }) }}
+              initial="enter"
+              animate="show"
+              exit="leave"
+              transition={{ duration: 0.32, ease: EASE_OUT }}
+            >
             {step === 0 && (
               <div className="grid gap-6">
                 <div className="flex items-center gap-4">
@@ -227,9 +279,11 @@ export function Launch() {
                         <li key={t} className="flex items-center gap-3 px-5 py-3.5">
                           <span className="grid size-6 place-items-center">
                             {state === 'done' ? (
-                              <Check className="size-4 text-lime-text" strokeWidth={3} aria-label="Done" />
+                              <m.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={SPRING_POP}>
+                                <Check className="size-4 text-lime-text" strokeWidth={3} aria-label="Done" />
+                              </m.span>
                             ) : state === 'active' ? (
-                              <LoaderCircle className="size-4 animate-spin" aria-label="In progress" />
+                              <DotsLoader className="size-[18px] text-ink" label="In progress" />
                             ) : (
                               <span className="size-2 rounded-full bg-[var(--dot-dim)]" />
                             )}
@@ -241,6 +295,12 @@ export function Launch() {
                     })}
                   </ol>
                 </div>
+                {done && (
+                  <m.div ref={birth} className="rounded-card border border-line bg-surface p-4 sm:p-5" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: EASE_OUT }}>
+                    <p className="label">Your company just joined the network</p>
+                    <NetworkField companies={[...companies, newcomer(d)]} highlight="new" delay={0.15} className="mt-2" />
+                  </m.div>
+                )}
                 {done && (
                   <div className="flex flex-wrap gap-3">
                     {/* NORA: link to the new company's page */}
@@ -261,6 +321,8 @@ export function Launch() {
                 )}
               </div>
             )}
+            </m.div>
+            </AnimatePresence>
           </div>
 
           {!done && (
@@ -273,8 +335,12 @@ export function Launch() {
                   Continue
                 </Button>
               ) : (
-                <Button variant="primary" size="lg" onClick={launch} disabled={progress >= 0}>
-                  {!address ? 'Connect wallet to launch' : progress >= 0 ? 'Launching…' : 'Sign and launch'}
+                <Button variant="primary" size="lg" onClick={launch} disabled={progress >= 0} className="disabled:opacity-100">
+                  {!address ? 'Connect wallet to launch' : progress >= 0 ? (
+                    <>
+                      <DotsLoader accent="currentColor" className="text-on-lime" label="Launching" /> Launching…
+                    </>
+                  ) : 'Sign and launch'}
                 </Button>
               )}
             </div>

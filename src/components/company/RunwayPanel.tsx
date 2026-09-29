@@ -2,6 +2,7 @@ import type { Company } from '@/types'
 import { cn } from '@/lib/cn'
 import { critical, sol, usd } from '@/lib/format'
 import { RunwayDots } from '@/components/dots/RunwayDots'
+import { CountUp } from '@/components/motion/CountUp'
 
 /**
  * How long the company survives, drawn as weeks you can count.
@@ -17,7 +18,9 @@ export function RunwayPanel({ company, className }: { company: Company; classNam
         <p className="text-[13px] text-ink-3">One dot = one week at today’s burn</p>
       </div>
       <p className="mt-3 flex items-baseline gap-2">
-        <span className={cn('font-mono text-[40px] leading-none font-medium tracking-[-0.04em] tabular', red && 'text-red')}>{company.runwayDays}</span>
+        <span className={cn('font-mono text-[40px] leading-none font-medium tracking-[-0.04em] tabular', red && 'text-red')}>
+          <CountUp value={company.runwayDays} format={(n) => String(Math.round(n))} />
+        </span>
         <span className="text-ink-2">days · about {weeks} {weeks === 1 ? 'week' : 'weeks'}</span>
       </p>
       <RunwayDots days={company.runwayDays} weeks={16} size="lg" className="mt-5 flex-wrap" />

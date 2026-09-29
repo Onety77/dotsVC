@@ -1,8 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowUpRight, ChevronLeft } from 'lucide-react'
 // NORA: replace with the company query keyed by :id (mint).
-import { getCompany, listings, sampleNow } from '@/data/network'
-import { count, countdown, day, price, sol, usd } from '@/lib/format'
+import { getCompany, listings } from '@/data/network'
+import { count, day, price, sol, usd } from '@/lib/format'
+import { Countdown } from '@/components/motion/Countdown'
+import { CountUp } from '@/components/motion/CountUp'
+import { History } from '@/components/company/History'
 import { Button } from '@/components/ui/Button'
 import { buttonClass } from '@/lib/button'
 import { Notice } from '@/components/ui/Notice'
@@ -37,8 +40,9 @@ export function CompanyPage() {
         <div className="border-b border-red/30 bg-red-soft">
           <div className="wrap flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[15px]">
+              <span aria-hidden className="heartbeat mr-2.5 inline-block size-2 -translate-y-px rounded-full bg-red align-middle" />
               <span className="font-semibold text-red">In receivership.</span> {listing.reason}. Auction ends in{' '}
-              <span className="font-mono tabular">{countdown(listing.auctionEndsAt, sampleNow)}</span>.
+              <Countdown to={listing.auctionEndsAt} urgentClass="" />.
             </p>
             <Button to={`/receivership?bid=${c.id}`} variant="danger" size="sm" arrow>
               Bid to rescue it
@@ -75,10 +79,10 @@ export function CompanyPage() {
           <Figures
             items={[
               { k: 'Price', v: price(c.priceUsd) },
-              { k: 'Market cap', v: usd(c.marketCapUsd) },
-              { k: 'Holders', v: count(c.holders) },
-              { k: 'Volume, 24h', v: usd(c.volume24hUsd) },
-              { k: 'Treasury', v: sol(c.treasurySol) },
+              { k: 'Market cap', v: <CountUp value={c.marketCapUsd} format={usd} /> },
+              { k: 'Holders', v: <CountUp value={c.holders} format={(n) => count(Math.round(n))} /> },
+              { k: 'Volume, 24h', v: <CountUp value={c.volume24hUsd} format={usd} /> },
+              { k: 'Treasury', v: <CountUp value={c.treasurySol} format={(n) => sol(n)} /> },
             ]}
           />
         </div>
@@ -90,7 +94,7 @@ export function CompanyPage() {
           <RunwayPanel company={c} />
         </div>
         <div className="min-w-0 lg:col-span-5">
-          <AgentConsole company={c} now={sampleNow} />
+          <AgentConsole company={c} />
         </div>
       </div>
 
@@ -120,17 +124,7 @@ export function CompanyPage() {
           <h2 id="history" className="text-h3 font-semibold">
             History
           </h2>
-          <ol className="mt-4 rounded-card border border-line bg-surface p-5">
-            {[...c.timeline].reverse().map((e, i) => (
-              <li key={e.at + e.text} className="relative grid grid-cols-[18px_64px_1fr] gap-3 pb-4 last:pb-0">
-                {/* the thread of dots through the company's life */}
-                {i < c.timeline.length - 1 && <span aria-hidden className="absolute top-3 bottom-0 left-[4px] w-px bg-line-2" />}
-                <span className={i === 0 ? (c.status === 'distressed' ? 'mt-1.5 size-2.5 rounded-full bg-red' : 'mt-1.5 size-2.5 rounded-full bg-lime') : 'mt-1.5 size-2.5 rounded-full bg-ink-4'} />
-                <span className="font-mono text-[12px] text-ink-3">{day(e.at)}</span>
-                <span className="text-[15px]">{e.text}</span>
-              </li>
-            ))}
-          </ol>
+          <History company={c} />
         </section>
       </div>
     </>

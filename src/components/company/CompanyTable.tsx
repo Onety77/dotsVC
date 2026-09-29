@@ -1,4 +1,7 @@
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { AnimatePresence, m, useInView, useReducedMotion } from 'motion/react'
+import { EASE_OUT } from '@/lib/motion'
 import { ChevronRight } from 'lucide-react'
 import type { Company } from '@/types'
 import { cn } from '@/lib/cn'
@@ -12,10 +15,15 @@ const cols = 'lg:grid-cols-[minmax(0,1.6fr)_132px_minmax(0,1.3fr)_112px_112px_mi
 /**
  * Companies as a ledger: identity, state, runway you can count, money, and what the agent is doing.
  * A table on wide screens, cards on phones.
+ * Rows arrive in order the first time the table is seen, and glide to their new places when
+ * you filter or sort.
  */
 export function CompanyTable({ companies, className }: { companies: Company[]; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const seen = useInView(ref, { once: true, margin: '0px 0px -8% 0px' })
+  const reduced = useReducedMotion()
   return (
-    <div className={cn('overflow-hidden rounded-card border border-line bg-surface', className)}>
+    <div ref={ref} className={cn('overflow-hidden rounded-card border border-line bg-surface', className)}>
       <div className={cn('hidden gap-5 border-b border-line px-5 py-3 lg:grid', cols)}>
         {['Company', 'Status', 'Runway', 'Fees, 30d', 'Market cap', 'Agent is working on'].map((h, i) => (
           <span key={h} className={cn('label', (i === 3 || i === 4) && 'text-right')}>
@@ -25,8 +33,17 @@ export function CompanyTable({ companies, className }: { companies: Company[]; c
         <span />
       </div>
       <ul>
-        {companies.map((c) => (
-          <li key={c.id} className="border-t border-line first:border-t-0">
+        <AnimatePresence initial={false} mode="popLayout">
+        {companies.map((c, i) => (
+          <m.li
+            key={c.id}
+            layout="position"
+            className="border-t border-line bg-surface first:border-t-0"
+            initial={reduced ? false : { opacity: 0, y: 12 }}
+            animate={seen || reduced ? { opacity: 1, y: 0 } : undefined}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
+            transition={{ duration: 0.5, delay: Math.min(i, 10) * 0.045, ease: EASE_OUT, layout: { type: 'spring', stiffness: 380, damping: 36 } }}
+          >
             <Link
               to={`/company/${c.id}`}
               className={cn('group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-4 py-4 transition-colors hover-device:hover:bg-hover sm:px-5', cols)}
@@ -56,8 +73,9 @@ export function CompanyTable({ companies, className }: { companies: Company[]; c
               </span>
               <ChevronRight className="hidden size-4 text-ink-4 transition-colors group-hover:text-ink lg:block" />
             </Link>
-          </li>
+          </m.li>
         ))}
+        </AnimatePresence>
       </ul>
     </div>
   )
