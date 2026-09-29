@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/*
+  DOTS: serious money, unserious subjects. See DESIGN.md.
+  Neutrals + one brand hue (lime: alive, primary) + red (distress only).
+  Every colour is a role that switches with the theme (.dark on <html>, the default).
+*/
+
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant hover-device (@media (hover: hover));
+
+:root {
+  color-scheme: light;
+  --bg: #f4f4f2;
+  --surface: #ffffff;
+  --raised: #fafaf9;
+  --sunken: #ececea;
+  --hover: rgb(12 12 14 / 0.04);
+  --line: rgb(12 12 14 / 0.09);
+  --line-2: rgb(12 12 14 / 0.16);
+
+  --ink: #0c0c0e;
+  --ink-2: rgb(12 12 14 / 0.66);
+  --ink-3: rgb(12 12 14 / 0.48);
+  --ink-4: rgb(12 12 14 / 0.3);
+
+  --lime: #c6f432;
+  --lime-soft: rgb(198 244 50 / 0.22);
+  --lime-text: #4a6b00;
+  --on-lime: #0c0c0e;
+
+  --red: #d9302c;
+  --red-soft: rgb(217 48 44 / 0.1);
+
+  --dot: #0c0c0e; /* a lit dot in the Field */
+  --dot-dim: rgb(12 12 14 / 0.14);
+  --shadow: 0 1px 2px rgb(12 12 14 / 0.05), 0 16px 40px -20px rgb(12 12 14 / 0.25);
+  --overlay: rgb(12 12 14 / 0.45);
+}
+
+.dark {
+  color-scheme: dark;
+  --bg: #09090b;
+  --surface: #111114;
+  --raised: #17171b;
+  --sunken: #0d0d10;
+  --hover: rgb(255 255 255 / 0.04);
+  --line: rgb(255 255 255 / 0.08);
+  --line-2: rgb(255 255 255 / 0.15);
+
+  --ink: #f5f5f3;
+  --ink-2: rgb(245 245 243 / 0.66);
+  --ink-3: rgb(245 245 243 / 0.46);
+  --ink-4: rgb(245 245 243 / 0.28);
+
+  --lime: #cfff3d;
+  --lime-soft: rgb(207 255 61 / 0.12);
+  --lime-text: #cfff3d;
+  --on-lime: #0c0c0e;
+
+  --red: #ff5a52;
+  --red-soft: rgb(255 90 82 / 0.12);
+
+  --dot: #f5f5f3;
+  --dot-dim: rgb(245 245 243 / 0.14);
+  --shadow: 0 0 0 1px rgb(255 255 255 / 0.03), 0 24px 60px -24px rgb(0 0 0 / 0.8);
+  --overlay: rgb(0 0 0 / 0.65);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-sunken: var(--sunken);
+  --color-hover: var(--hover);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-lime: var(--lime);
+  --color-lime-soft: var(--lime-soft);
+  --color-lime-text: var(--lime-text);
+  --color-on-lime: var(--on-lime);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --shadow-card: var(--shadow);
+}
+
+@theme {
+  --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+
+  --text-display: clamp(2.75rem, 1.6rem + 5vw, 5.75rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.045em;
+  --text-h1: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: -0.04em;
+  --text-h2: clamp(1.875rem, 1.4rem + 2vw, 3rem);
+  --text-h2--line-height: 1.02;
+  --text-h2--letter-spacing: -0.035em;
+  --text-h3: 1.25rem;
+  --text-h3--line-height: 1.25;
+  --text-h3--letter-spacing: -0.02em;
+  --text-lead: clamp(1.0625rem, 0.95rem + 0.45vw, 1.25rem);
+  --text-lead--line-height: 1.5;
+  --text-stat: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  --text-stat--line-height: 1.1;
+  --text-stat--letter-spacing: -0.03em;
+
+  --radius-card: 18px;
+  --radius-control: 10px;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility wrap {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 20px;
+  @media (width >= 640px) { padding-inline: 32px; }
+  @media (width >= 1024px) { padding-inline: 40px; }
+}
+
+/* Small mono caps: section labels and table heads */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body { min-height: 100svh; overflow-x: clip; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  ::selection { background: var(--lime); color: var(--on-lime); }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 6px; }
+  button:not(:disabled), [role="button"] { cursor: pointer; }
+  input::placeholder, textarea::placeholder { color: var(--ink-4); }
+}
+
+.skeleton {
+  background: var(--sunken);
+  border-radius: 8px;
+}
