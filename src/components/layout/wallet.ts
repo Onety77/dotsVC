@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react'
 
 export interface Wallet {
   address: string | null
-  /** NORA: open the Solana wallet adapter modal. The mock toggles a sample address. */
   connect: () => void
 }
 

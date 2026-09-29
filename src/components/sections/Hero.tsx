@@ -36,7 +36,7 @@ export function Hero({ companies }: { companies: Company[] }) {
         <div className="mt-10 grid gap-10 lg:mt-4 lg:grid-cols-12 [&>*]:min-w-0 lg:gap-6">
           <div className="lg:col-span-4 lg:pt-16">
             <m.p className="max-w-[34rem] text-lead text-ink-2" {...rise(0.45)}>
-              Launch on Pump.fun and DOTS gives your coin a treasury, an AI agent to run it, and one rule: creator fees are its only income.{' '}
+              Launch on Pump.fun and DotCo gives your coin a treasury, an AI agent to run it, and one rule: creator fees are its only income.{' '}
               <span className="text-ink">Companies that earn keep going. Companies that don’t are sold to someone who can save them.</span>
             </m.p>
             <m.div className="mt-9 flex flex-wrap gap-3" {...rise(0.55)}>

@@ -20,7 +20,6 @@ const H = 280
  * Price over time, with a readout that follows the pointer.
  * Motion: the line draws left to right when first seen and on every range change; a live dot
  * breathes at the latest price; the range pill slides.
- * NORA: sample path generated from the company's price and 24h change; feed real candles/points.
  */
 export function PriceChart({ company, className }: { company: Company; className?: string }) {
   const [range, setRange] = useState<(typeof ranges)[number]['id']>('1D')

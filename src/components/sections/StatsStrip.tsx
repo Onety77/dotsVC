@@ -3,7 +3,7 @@ import { cn } from '@/lib/cn'
 import { count, sol, usd } from '@/lib/format'
 import { CountUp } from '@/components/motion/CountUp'
 
-/** The network in five numbers, split by hairlines. They count up once, together. NORA: sample aggregates. */
+/** The network in five numbers, split by hairlines. They count up once, together. */
 export function StatsStrip({ stats }: { stats: NetworkStats }) {
   const items = [
     { k: 'Companies', n: stats.companies, f: (v: number) => count(Math.round(v)) },

@@ -3,8 +3,6 @@ import { holdco, sampleNow } from '@/data/network'
 
 /*
   Two tiny shared stores, so every clock and every holdco figure on a page moves together.
-  NORA: the sample clock starts at `sampleNow` and runs from page load; use Date.now() when live.
-  NORA: the holdco treasury ticks with simulated fee pulses; replace with a subscription to the program.
 */
 
 const loadedAt = Date.now()

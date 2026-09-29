@@ -1,6 +1,5 @@
 import type { Bid, Company, Listing, NetworkStats } from '@/types'
 
-// NORA: sample data. Every company, figure, agent and bid here is fictional.
 // Replace with the indexer / program reads; shapes match src/types.
 
 /** "Now" for the sample data, so countdowns and "3h ago" stay stable. */
@@ -157,7 +156,7 @@ export const getCompany = (id: string) => companies.find((c) => c.id === id)
 
 const hours = (h: number) => new Date(sampleNow + h * 3600_000).toISOString()
 
-/** Companies for sale. NORA: from the receivership program. */
+/** Companies for sale. */
 export const listings: Listing[] = [
   { companyId: 'velv', reason: 'Burn above fees for 21 days', auctionEndsAt: hours(2.24), reservePriceSol: 20, topBidSol: 31, bids: 4 },
   { companyId: 'rugby', reason: 'Developer wallet exited', auctionEndsAt: hours(6.8), reservePriceSol: 35, topBidSol: 58, bids: 7 },
@@ -166,15 +165,14 @@ export const listings: Listing[] = [
   { companyId: 'shrmp', reason: 'Agent went off-mission', auctionEndsAt: hours(61), reservePriceSol: 60, topBidSol: 92, bids: 9 },
 ]
 
-/** Recent takeover bids across the market. NORA: from the auction program. */
+/** Recent takeover bids across the market. */
 export const bids: Bid[] = [
   { id: 'b1', bidder: 'Shellfish Partners', companyId: 'shrmp', amountSol: 92, at: at(2), plan: 'Replace the agent, relaunch as a cooking show.' },
-  { id: 'b2', bidder: 'Frogbank (via DOTS)', companyId: 'rugby', amountSol: 58, at: at(5), plan: 'Merge into Frogbank as its sports brand.' },
+  { id: 'b2', bidder: 'Frogbank (via DotCo)', companyId: 'rugby', amountSol: 58, at: at(5), plan: 'Merge into Frogbank as its sports brand.' },
   { id: 'b3', bidder: '7xKp…w3Qd', companyId: 'llama', amountSol: 36, at: at(9), plan: 'Voice-note bot for holders; cut burn by 60%.' },
   { id: 'b4', bidder: 'Night Owl Fund', companyId: 'velv', amountSol: 31, at: at(14), plan: 'Fashion collab, then a slow rebuild.' },
 ]
 
-/** NORA: aggregates from the indexer. */
 export const networkStats: NetworkStats = {
   companies: companies.length,
   treasurySol: companies.reduce((a, c) => a + c.treasurySol, 0) + 892.4,
@@ -185,4 +183,4 @@ export const networkStats: NetworkStats = {
 }
 
 /** The holding company itself. */
-export const holdco = { name: 'DOTS Holdco', treasurySol: 892.4, feeShare: 0.1 }
+export const holdco = { name: 'DotCo Holdco', treasurySol: 892.4, feeShare: 0.1 }

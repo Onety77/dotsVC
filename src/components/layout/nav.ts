@@ -3,5 +3,4 @@ export const nav = [
   { to: '/launch', label: 'Launch' },
   { to: '/receivership', label: 'Receivership' },
 ]
-// CONTENT: point at the real docs.
-export const docsUrl = 'https://docs.dots.example'
+export const docsUrl = 'https://docs.dotco.example'

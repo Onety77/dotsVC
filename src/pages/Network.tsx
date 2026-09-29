@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
 import type { CompanyStatus } from '@/types'
-// NORA: replace with indexer queries.
 import { companies, networkStats } from '@/data/network'
 import { count, sol, usd } from '@/lib/format'
 import { useHoldcoTreasury } from '@/lib/live'
@@ -45,7 +44,7 @@ export function Network() {
     <>
       <PageHeader
         label="The network"
-        title="DOTS Holdco"
+        title="DotCo Holdco"
         description="A holding company of meme companies. Each one is tied to the holdco until it runs out of runway."
         actions={
           <Button to="/launch" variant="primary" arrow>
@@ -71,7 +70,7 @@ export function Network() {
           ) : state === 'error' ? (
             <Notice kind="error" title="The network map didn’t load." body="The indexer didn’t answer. Nothing has changed on-chain." />
           ) : source.length === 0 ? (
-            <Notice kind="empty" title="No companies yet." body="The first company launched through DOTS will appear here, tied to the holdco." />
+            <Notice kind="empty" title="No companies yet." body="The first company launched through DotCo will appear here, tied to the holdco." />
           ) : (
             <>
               <NetworkField companies={source} />

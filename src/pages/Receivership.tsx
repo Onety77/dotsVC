@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-// NORA: replace with the receivership / auction program reads.
 import { bids, getCompany, listings, networkStats, sampleNow } from '@/data/network'
 import { ago, count, sol } from '@/lib/format'
 import { useDemoState } from '@/lib/hooks'
@@ -159,7 +158,6 @@ export function Receivership() {
         company={last ? getCompany(last) : undefined}
         listing={listings.find((l) => l.companyId === last)}
         onSubmit={async (b) => {
-          // NORA: sign + send to the auction program.
           await wait(900)
           setMyBids((xs) => [...xs.filter((x) => x.companyId !== b.companyId), { companyId: b.companyId, amountSol: b.amountSol }])
         }}

@@ -31,7 +31,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-[color-mix(in_srgb,var(--bg)_86%,transparent)] backdrop-blur-md">
       <div className="wrap flex h-16 items-center gap-8">
-        <Link to="/" aria-label="DOTS home" className="rounded-md">
+        <Link to="/" aria-label="DotCo home" className="rounded-md">
           <Logo lively />
         </Link>
         <nav aria-label="Main" className="hidden md:block">

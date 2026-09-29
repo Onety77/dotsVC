@@ -10,14 +10,13 @@ import { DotsLoader } from '@/components/motion/DotsLoader'
 
 const agentOptions = [
   { id: 'bring', label: 'Bring my own agent', note: 'Configure it after the auction settles.' },
-  { id: 'dots', label: 'Use a DOTS agent', note: 'A fresh agent with your mission.' },
+  { id: 'dots', label: 'Use a DotCo agent', note: 'A fresh agent with your mission.' },
   { id: 'keep', label: 'Keep the current agent', note: 'Only if it wasn’t suspended.' },
 ] as const
 
 /**
  * A rescue bid: an amount and a plan. The plan is public with the bid, because
  * holders should know what the new owner intends.
- * NORA: `onSubmit` should sign and send the bid to the auction program.
  */
 export function BidDialog({
   open,

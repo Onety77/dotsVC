@@ -65,7 +65,7 @@ interface Pulse {
  * - Living companies breathe; paused ones hold still; cut-off ones fade.
  * - Creator fees flow: lime pulses travel from earning companies into the holdco (weighted by
  *   fees), and the holdco ripples and its treasury ticks up (`useHoldcoTreasury`). Hover a company
- *   to see its own fees flow. NORA: pulses are simulated from 30-day fees.
+ *   to see its own fees flow.
  * Under reduced motion it renders the end state, still.
  */
 export function NetworkField({ companies, className, delay = 0, highlight }: { companies: Company[]; className?: string; delay?: number; highlight?: string }) {
@@ -289,7 +289,7 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
           animate={go ? { opacity: 1 } : undefined}
           transition={{ duration: 0.6, delay: delay + T.holdco + 0.3 }}
         >
-          DOTS HOLDCO
+          DOTCO HOLDCO
         </m.text>
 
         {/* Companies */}

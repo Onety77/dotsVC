@@ -1,6 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
 import { ArrowUpRight, ChevronLeft } from 'lucide-react'
-// NORA: replace with the company query keyed by :id (mint).
 import { getCompany, listings } from '@/data/network'
 import { count, day, price, sol, usd } from '@/lib/format'
 import { Countdown } from '@/components/motion/Countdown'
@@ -69,7 +68,6 @@ export function CompanyPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              {/* NORA: link to the coin on PumpSwap / Pump.fun */}
               <a href="https://pump.fun" target="_blank" rel="noreferrer" className={buttonClass(listing ? 'secondary' : 'primary', 'md')}>
                 Trade on PumpSwap <ArrowUpRight className="size-4" />
               </a>

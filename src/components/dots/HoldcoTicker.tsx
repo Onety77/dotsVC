@@ -5,7 +5,6 @@ import { Rolling } from '@/components/motion/Rolling'
 
 /**
  * The holdco's treasury, live: it ticks up each time a fee pulse in the Field arrives.
- * NORA: simulated from sample fees; subscribe to the holdco account when wired.
  */
 export function HoldcoTicker({ className }: { className?: string }) {
   const v = useHoldcoTreasury()

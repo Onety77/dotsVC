@@ -4,7 +4,7 @@ import { Item, Stagger } from '@/components/motion/Reveal'
 import { EarnDiagram, HireDiagram, LaunchDiagram, SurviveDiagram } from './LifecycleDiagrams'
 
 const stages: { id: string; n: string; title: string; body: string; art: ReactNode }[] = [
-  { id: 'launch', n: '01', title: 'Launch', body: 'Launch the coin on Pump.fun. DOTS builds the company around it: a treasury, a mandate, and a seat in the holdco.', art: <LaunchDiagram /> },
+  { id: 'launch', n: '01', title: 'Launch', body: 'Launch the coin on Pump.fun. DotCo builds the company around it: a treasury, a mandate, and a seat in the holdco.', art: <LaunchDiagram /> },
   { id: 'hire', n: '02', title: 'Hire', body: 'Write a mission and an AI agent becomes the CEO. It can only spend on jobs its mandate allows, and every payment is on-chain.', art: <HireDiagram /> },
   { id: 'earn', n: '03', title: 'Earn', body: 'Creator fees fill the treasury and the agent’s work burns it. Runway is what’s left, counted in weeks, one dot each.', art: <EarnDiagram /> },
   { id: 'survive', n: '04', title: 'Survive, or be sold', body: 'Under three weeks, spending pauses. At zero, the company goes into receivership, and its line to the holdco is cut.', art: <SurviveDiagram /> },

@@ -8,7 +8,6 @@ import { WalletCtx } from './wallet'
 
 export function Shell() {
   const { pathname } = useLocation()
-  // NORA: replace with the Solana wallet adapter.
   const [address, setAddress] = useState<string | null>(null)
   const connect = () => setAddress((a) => (a ? null : '7xKp…w3Qd'))
 

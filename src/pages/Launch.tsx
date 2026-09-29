@@ -28,10 +28,9 @@ const wait = (ms: number) => new Promise((r) => window.setTimeout(r, ms))
 
 const blank: LaunchDraft = { name: '', ticker: '', description: '', x: '', telegram: '', mission: '', agentName: '', mandate: ['Design', 'Marketing'], budgetSol: 1, initialBuySol: 0 }
 
-// NORA: the two transactions a launch sends. Report progress by index; resolve with the new company's id.
 const TX = ['Create the coin on Pump.fun', 'Create the company, its treasury and mandate', 'Hire the agent']
 
-/** The company you just launched, as the network sees it. NORA: use the new company's real record. */
+/** The company you just launched, as the network sees it. */
 function newcomer(d: LaunchDraft): Company {
   const runway = Math.round(30 / d.budgetSol)
   return {
@@ -303,7 +302,6 @@ export function Launch() {
                 )}
                 {done && (
                   <div className="flex flex-wrap gap-3">
-                    {/* NORA: link to the new company's page */}
                     <Button to="/network" variant="primary" size="lg" arrow>
                       See it in the network
                     </Button>

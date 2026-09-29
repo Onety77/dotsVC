@@ -23,7 +23,6 @@ interface Line {
   typing?: boolean
 }
 
-/** NORA: simulated actions until the agent runtime streams its log. */
 function nextAction(c: Company, n: number) {
   const job = c.jobs.find((j) => j.status === 'shipping')?.title ?? c.jobs[0]?.title ?? 'the roadmap'
   const pick = <T,>(xs: T[]) => xs[Math.floor(Math.random() * xs.length)]
@@ -66,7 +65,6 @@ function Typing({ text, onDone }: { text: string; onDone: () => void }) {
 /**
  * What the agent CEO is doing: its mission, its latest actions, and its jobs.
  * While it's on screen and the agent is working, new actions type themselves in at the top.
- * NORA: log lines from the agent runtime; jobs from the mandate/escrow program.
  */
 export function AgentConsole({ company, className }: { company: Company; className?: string }) {
   const a = company.agent

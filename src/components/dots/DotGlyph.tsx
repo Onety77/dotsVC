@@ -12,7 +12,6 @@ import { seeded } from '@/lib/seeded'
  * Motion: the first time it's seen, the dots pop in from the centre outward. When the seed
  * changes (typing a ticker in the launch flow) the mark re-forms in a ripple from the centre.
  * When the status changes (a rescue), the centre dot changes colour and sends out a ring.
- * NORA: pass `src` (coin image from Pump metadata) to show the real art instead.
  */
 export function DotGlyph({
   seed,

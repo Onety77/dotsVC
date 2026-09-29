@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#09090b" />
-    <meta name="description" content="DOTS turns meme coins into companies. Launch on Pump.fun, hire an AI agent to run it, and let creator fees decide whether it survives." />
-    <title>DOTS · Meme companies that earn their survival</title>
+    <meta name="theme-color" content="#f4f4f2" />
+    <meta name="description" content="DotCo turns meme coins into companies. Launch on Pump.fun, hire an AI agent to run it, and let creator fees decide whether it survives." />
+    <title>DotCo · Meme companies that earn their survival</title>
     <script>
-      // Dark by default; apply a saved light preference before first paint.
-      try { if (localStorage.getItem('theme') === 'light') document.documentElement.classList.remove('dark') } catch (e) {}
+      // Light by default; apply a saved dark preference before first paint.
+      try { if (localStorage.getItem('theme') === 'dark') { document.documentElement.classList.add('dark'); document.querySelector('meta[name="theme-color"]').setAttribute('content', '#09090b') } } catch (e) {}
     </script>
   </head>
   <body>

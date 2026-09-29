@@ -3,11 +3,10 @@ import { ArrowUpRight } from 'lucide-react'
 import { Logo } from '@/components/ui/Logo'
 import { docsUrl } from './nav'
 
-const legal = '© 2026 DOTS. Not affiliated with Pump.fun. Meme coins are volatile; nothing here is investment advice.'
+const legal = '© 2026 DotCo. Not affiliated with Pump.fun. Meme coins are volatile; nothing here is investment advice.'
 
 const cols = [
   { head: 'Network', links: [['Explore companies', '/network'], ['Receivership', '/receivership'], ['Launch a company', '/launch']] },
-  // CONTENT: real URLs for docs, program addresses, audits and socials.
   { head: 'Protocol', links: [['Docs', docsUrl], ['Program addresses', docsUrl], ['Audits', docsUrl]] },
   { head: 'Community', links: [['X', docsUrl], ['Telegram', docsUrl], ['Brand kit', docsUrl]] },
 ]

@@ -3,7 +3,6 @@ import type { ViewState } from '@/types'
 
 /**
  * Preview any data state with ?state=loading|empty|error.
- * NORA: replace with your query status when wiring.
  */
 export function useDemoState(): ViewState {
   const [params] = useSearchParams()

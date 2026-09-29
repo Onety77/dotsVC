@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowUpRight } from 'lucide-react'
-// NORA: replace with indexer queries.
 import { companies, getCompany, listings, networkStats } from '@/data/network'
 import { sol } from '@/lib/format'
 import { Button } from '@/components/ui/Button'

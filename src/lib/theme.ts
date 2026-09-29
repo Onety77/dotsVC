@@ -8,7 +8,7 @@ function apply(t: Theme) {
   document.documentElement.classList.toggle('dark', t === 'dark')
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'dark' ? '#09090b' : '#f4f4f2')
   try {
-    if (t === 'light') localStorage.setItem('theme', 'light')
+    if (t === 'dark') localStorage.setItem('theme', 'dark')
     else localStorage.removeItem('theme')
   } catch {
     /* storage blocked: applies for this visit */
@@ -17,7 +17,7 @@ function apply(t: Theme) {
 }
 
 /**
- * Dark by default. index.html applies a saved "light" before first paint.
+ * Light by default. index.html applies a saved "dark" before first paint.
  * Pass the point that was clicked and the new theme spreads out from it as a growing circle
  * (View Transitions). Browsers without it, and reduced motion, switch instantly.
  */

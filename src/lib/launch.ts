@@ -1,4 +1,4 @@
-/** What the launch flow collects. NORA: map to the launch transactions. */
+/** What the launch flow collects. */
 export interface LaunchDraft {
   name: string
   ticker: string
@@ -13,10 +13,10 @@ export interface LaunchDraft {
   initialBuySol: number
 }
 
-/** Placeholder routing of creator fees. NORA: replace with the program's real split. */
+/** Placeholder routing of creator fees. */
 export const routing = [
   { k: 'Company treasury', v: 0.8, cls: 'bg-lime' },
-  { k: 'DOTS holdco', v: 0.1, cls: 'bg-ink' },
+  { k: 'DotCo holdco', v: 0.1, cls: 'bg-ink' },
   { k: 'Creator', v: 0.1, cls: 'bg-ink-4' },
 ]
 

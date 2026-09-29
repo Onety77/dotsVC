@@ -1,6 +1,5 @@
 /**
- * Domain types for the DOTS UI.
- * NORA: align these with the indexer / program accounts.
+ * Domain types for the DotCo UI.
  * Treasury and bids are in SOL; market figures and fees are in USD.
  */
 
@@ -52,7 +51,7 @@ export interface Company {
   jobs: Job[]
   artifacts: Artifact[]
   timeline: { at: string; text: string }[]
-  /** Coin art. NORA: from Pump metadata. Without it the company shows its dot glyph. */
+  /** Coin art. */
   image?: string
 }
 
