@@ -71,6 +71,8 @@ export interface Bid {
   amountSol: number
   at: string
   plan: string
+  /** who would run the company: the bidder's own agent, a fresh DotCo agent, or the current one */
+  agent: 'bring' | 'dots' | 'keep'
 }
 
 export interface NetworkStats {

@@ -75,7 +75,7 @@ export function Home() {
         <Stagger gap={0.1} className="mt-12 grid gap-4 md:grid-cols-3 [&>*]:min-w-0">
           {forSale.map((l) => (
             <Item key={l.companyId} className="flex">
-              <ListingCard listing={l} company={getCompany(l.companyId)!} onBid={(id) => navigate(`/receivership?bid=${id}`)} className="flex-1" />
+              <ListingCard listing={l} company={getCompany(l.companyId)!} onBid={(id) => navigate(`/receivership/${id}?bid=1`)} className="flex-1" />
             </Item>
           ))}
         </Stagger>

@@ -1,10 +1,10 @@
-import { TravelLink } from '@/components/motion/TravelLink'
-import { travel } from '@/lib/travel'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowUpRight, ChevronLeft } from 'lucide-react'
 import { getCompany, listings } from '@/data/network'
 import { count, day, price, sol, usd } from '@/lib/format'
 import { Countdown } from '@/components/motion/Countdown'
+import { TravelLink } from '@/components/motion/TravelLink'
+import { travel } from '@/lib/travel'
 import { CountUp } from '@/components/motion/CountUp'
 import { History } from '@/components/company/History'
 import { Button } from '@/components/ui/Button'
@@ -14,7 +14,9 @@ import { Figures } from '@/components/ui/PageHeader'
 import { Status } from '@/components/ui/Status'
 import { DotGlyph } from '@/components/dots/DotGlyph'
 import { AgentConsole } from '@/components/company/AgentConsole'
-import { PriceChart } from '@/components/company/PriceChart'
+import { MarketCard } from '@/components/company/MarketCard'
+import { MoneyPanel } from '@/components/company/MoneyPanel'
+import { Item, Stagger } from '@/components/motion/Reveal'
 import { RunwayPanel } from '@/components/company/RunwayPanel'
 
 const kindLabel = { store: 'Store', app: 'App', game: 'Game', bot: 'Bot', content: 'Content' } as const
@@ -45,8 +47,8 @@ export function CompanyPage() {
               <span className="font-semibold text-red">In receivership.</span> {listing.reason}. Auction ends in{' '}
               <Countdown to={listing.auctionEndsAt} urgentClass="" />.
             </p>
-            <Button to={`/receivership?bid=${c.id}`} variant="danger" size="sm" arrow>
-              Bid to rescue it
+            <Button to={`/receivership/${c.id}`} variant="danger" size="sm" arrow>
+              See the auction
             </Button>
           </div>
         </div>
@@ -90,17 +92,14 @@ export function CompanyPage() {
         </div>
       </div>
 
-      <div className="wrap grid gap-6 py-10 lg:grid-cols-12 [&>*]:min-w-0 lg:py-12">
-        <div className="flex min-w-0 flex-col gap-6 lg:col-span-7">
-          <PriceChart company={c} />
-          <RunwayPanel company={c} />
-        </div>
-        <div className="min-w-0 lg:col-span-5">
-          <AgentConsole company={c} />
-        </div>
+      <div className="wrap grid items-start gap-6 py-10 lg:grid-cols-12 lg:py-12 [&>*]:min-w-0">
+        <MarketCard company={c} className="lg:col-span-7" />
+        <AgentConsole company={c} showJobs={false} className="lg:col-span-5" />
+        <MoneyPanel company={c} className="lg:col-span-7" />
+        <RunwayPanel company={c} className="lg:col-span-5" />
       </div>
 
-      <div className="wrap grid gap-6 pb-16 lg:grid-cols-12 [&>*]:min-w-0 lg:pb-24">
+      <div className="wrap grid items-start gap-6 pb-16 lg:grid-cols-12 lg:pb-24 [&>*]:min-w-0">
         <section aria-labelledby="shipped" className="lg:col-span-7">
           <h2 id="shipped" className="text-h3 font-semibold">
             What it has shipped
@@ -108,18 +107,21 @@ export function CompanyPage() {
           {c.artifacts.length === 0 ? (
             <p className="mt-4 rounded-card border border-dashed border-line-2 px-5 py-8 text-[15px] text-ink-3">Nothing shipped yet.</p>
           ) : (
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Stagger as="ul" gap={0.08} className="mt-4 grid gap-3 sm:grid-cols-2">
               {c.artifacts.map((a) => (
-                <li key={a.id} className="rounded-card border border-line bg-surface p-5">
+                <Item as="li" key={a.id} className="flex flex-col rounded-card border border-line bg-surface p-5">
                   <p className="flex items-center justify-between gap-3">
-                    <span className="label">{kindLabel[a.kind]}</span>
+                    <span className="flex items-center gap-2">
+                      <DotGlyph seed={`${c.ticker}-${a.id}`} status="active" size={28} />
+                      <span className="label">{kindLabel[a.kind]}</span>
+                    </span>
                     <span className="font-mono text-[12px] text-ink-3">v{a.version}</span>
                   </p>
-                  <p className="mt-3 font-semibold">{a.name}</p>
-                  <p className="mt-1 text-[14px] text-ink-2">{a.note}</p>
-                </li>
+                  <p className="mt-4 text-[17px] font-semibold tracking-[-0.01em]">{a.name}</p>
+                  <p className="mt-auto pt-4 font-mono text-[15px] text-lime-text">{a.note}</p>
+                </Item>
               ))}
-            </ul>
+            </Stagger>
           )}
         </section>
         <section aria-labelledby="history" className="lg:col-span-5">

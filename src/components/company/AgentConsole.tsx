@@ -66,7 +66,7 @@ function Typing({ text, onDone }: { text: string; onDone: () => void }) {
  * What the agent CEO is doing: its mission, its latest actions, and its jobs.
  * While it's on screen and the agent is working, new actions type themselves in at the top.
  */
-export function AgentConsole({ company, className }: { company: Company; className?: string }) {
+export function AgentConsole({ company, className, showJobs = true }: { company: Company; className?: string; showJobs?: boolean }) {
   const a = company.agent
   const now = useNow()
   const ref = useRef<HTMLDivElement>(null)
@@ -118,7 +118,7 @@ export function AgentConsole({ company, className }: { company: Company; classNa
         <p className="label">Mission</p>
         <p className="mt-2 text-[15px] leading-relaxed">{a.mission}</p>
       </div>
-      <div className="border-b border-line p-5">
+      <div className={cn('p-5', showJobs && company.jobs.length > 0 && 'border-b border-line')}>
         <p className="label mb-3">Latest</p>
         <ol aria-live="polite" className="relative">
           <AnimatePresence initial={false}>
@@ -139,7 +139,7 @@ export function AgentConsole({ company, className }: { company: Company; classNa
           </AnimatePresence>
         </ol>
       </div>
-      {company.jobs.length > 0 && (
+      {showJobs && company.jobs.length > 0 && (
         <ul className="p-5">
           <li className="label mb-3">Jobs</li>
           {company.jobs.map((j) => (

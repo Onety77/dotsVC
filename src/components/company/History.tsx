@@ -9,14 +9,14 @@ import { EASE_OUT, SPRING_POP } from '@/lib/motion'
  * The company's life as a thread of dots, newest first. On first view the thread draws down
  * and each event's dot lands in turn; the latest one is alive (lime) or in trouble (red).
  */
-export function History({ company: c }: { company: Company }) {
+export function History({ company: c, className }: { company: Company; className?: string }) {
   const ref = useRef<HTMLOListElement>(null)
   const seen = useInView(ref, { once: true, margin: '0px 0px -10% 0px' })
   const reduced = useReducedMotion()
   const go = seen || reduced
   const events = [...c.timeline].reverse()
   return (
-    <ol ref={ref} className="mt-4 rounded-card border border-line bg-surface p-5">
+    <ol ref={ref} className={cn('mt-4 rounded-card border border-line bg-surface p-5', className)}>
       {events.map((e, i) => {
         const latest = i === 0
         return (

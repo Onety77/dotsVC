@@ -29,6 +29,9 @@ function subscribeClock(cb: () => void) {
   }
 }
 
+/** The sample clock right now, for stamping things you do (a bid). */
+export const sampleNowMs = () => compute()
+
 /** "Now" for the sample data, ticking once a second. One interval for the whole page. */
 export const useNow = () => useSyncExternalStore(subscribeClock, () => now)
 
@@ -50,4 +53,33 @@ export const useHoldcoTreasury = () =>
       }
     },
     () => holdcoSol,
+  )
+
+/** A bid you placed this session. */
+export interface MyBid {
+  companyId: string
+  amountSol: number
+  plan: string
+  agent: 'bring' | 'dots' | 'keep'
+  at: number
+}
+
+let myBids: MyBid[] = []
+const bidSubs = new Set<() => void>()
+
+/** Your latest bid replaces your earlier one on the same company. */
+export function placeBid(b: MyBid) {
+  myBids = [...myBids.filter((x) => x.companyId !== b.companyId), b]
+  bidSubs.forEach((f) => f())
+}
+
+export const useMyBids = () =>
+  useSyncExternalStore(
+    (cb) => {
+      bidSubs.add(cb)
+      return () => {
+        bidSubs.delete(cb)
+      }
+    },
+    () => myBids,
   )

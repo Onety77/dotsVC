@@ -21,7 +21,7 @@ const H = 280
  * Motion: the line draws left to right when first seen and on every range change; a live dot
  * breathes at the latest price; the range pill slides.
  */
-export function PriceChart({ company, className }: { company: Company; className?: string }) {
+export function PriceChart({ company, className, bare }: { company: Company; className?: string; bare?: boolean }) {
   const [range, setRange] = useState<(typeof ranges)[number]['id']>('1D')
   const [hover, setHover] = useState<number | null>(null)
   const uid = useId()
@@ -45,7 +45,7 @@ export function PriceChart({ company, className }: { company: Company; className
   }
 
   return (
-    <div className={cn('rounded-card border border-line bg-surface p-5 sm:p-6', className)}>
+    <div className={cn(!bare && 'rounded-card border border-line bg-surface', 'p-5 sm:p-6', className)}>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="label">${company.ticker} price</p>
@@ -117,9 +117,9 @@ export function PriceChart({ company, className }: { company: Company; className
       )}
       </div>
       <div className="mt-2 flex justify-between font-mono text-[11px] text-ink-4">
-        <span>{price(min)}</span>
+        <span>{price(data[0])}</span>
         <span>{range === '1D' ? '24 hours' : range === '1W' ? '7 days' : range === '1M' ? '30 days' : 'Since launch'}</span>
-        <span>{price(max)}</span>
+        <span>{price(data[data.length - 1])} now</span>
       </div>
     </div>
   )

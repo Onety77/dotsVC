@@ -204,6 +204,10 @@
 .dot-wave > :nth-child(2) { animation-delay: 0.15s; }
 .dot-wave > :nth-child(3) { animation-delay: 0.3s; }
 
+/* a new row flashes its colour, then settles (trades) */
+@keyframes flash { from { background: var(--flash); } }
+.flash { animation: flash 1.8s ease-out; }
+
 /* the typing caret in the agent log */
 @keyframes caret { 50% { opacity: 0; } }
 .caret { animation: caret 0.9s steps(1) infinite; }
@@ -228,7 +232,7 @@ html[data-vt="travel"]::view-transition-new(root) { animation: vt-in 0.3s ease b
 @keyframes vt-in { from { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton, .breathe, .flatline, .heartbeat, .live-dot::after, .dot-wave > *, .caret { animation: none; }
+  .skeleton, .breathe, .flatline, .heartbeat, .live-dot::after, .dot-wave > *, .caret, .flash { animation: none; }
   .glyph circle, .runway-dot { transition: none; }
   .glyph[data-seen="false"] circle { transform: none; opacity: 1; }
   .glyph-ripple { display: none; }

@@ -165,13 +165,51 @@ export const listings: Listing[] = [
   { companyId: 'shrmp', reason: 'Agent went off-mission', auctionEndsAt: hours(61), reservePriceSol: 60, topBidSol: 92, bids: 9 },
 ]
 
-/** Recent takeover bids across the market. */
-export const bids: Bid[] = [
-  { id: 'b1', bidder: 'Shellfish Partners', companyId: 'shrmp', amountSol: 92, at: at(2), plan: 'Replace the agent, relaunch as a cooking show.' },
-  { id: 'b2', bidder: 'Frogbank (via DotCo)', companyId: 'rugby', amountSol: 58, at: at(5), plan: 'Merge into Frogbank as its sports brand.' },
-  { id: 'b3', bidder: '7xKp…w3Qd', companyId: 'llama', amountSol: 36, at: at(9), plan: 'Voice-note bot for holders; cut burn by 60%.' },
-  { id: 'b4', bidder: 'Night Owl Fund', companyId: 'velv', amountSol: 31, at: at(14), plan: 'Fashion collab, then a slow rebuild.' },
-]
+type Rung = [bidder: string, amountSol: number, hoursAgo: number, agent: Bid['agent'], plan: string]
+
+/** Every bid in every open auction, lowest first. */
+const ladders: Record<string, Rung[]> = {
+  velv: [
+    ['Soft Hands DAO', 20, 50, 'dots', 'Keep it small: one merch drop a month, burn under 0.5 SOL a day.'],
+    ['7h2A…9fLe', 24, 31, 'bring', 'Turn the worm into a sleep-sounds app. Subscriptions, not hype.'],
+    ['Loafers Inc', 27, 22, 'keep', 'Fold it into Loafers as a textile brand. Shared designers, one treasury.'],
+    ['Night Owl Fund', 31, 14, 'bring', 'Fashion collab first, then a slow rebuild with a much smaller budget.'],
+  ],
+  rugby: [
+    ['Scrum Collective', 35, 60, 'dots', 'Weekly fan polls decide the roadmap. Burn capped at 1 SOL a day.'],
+    ['Q9mD…uu21', 38, 49, 'bring', 'Fantasy league for holders, prizes paid from fees.'],
+    ['Try Line Capital', 42, 40, 'bring', 'Rebrand as a sports-news bot and sell sponsorships.'],
+    ['Hooker Ventures', 45, 29, 'dots', 'Merch only: jerseys for every holder over 1M tokens.'],
+    ['Moon Mechanics', 49, 18, 'keep', 'Share Moon Mechanics’ design team. Rugby becomes the fun side project.'],
+    ['Dropkick', 53, 9, 'bring', 'Relaunch around a mobile kicking game. The team ships it in 3 weeks.'],
+    ['Frogbank (via DotCo)', 58, 5, 'keep', 'Merge into Frogbank as its sports brand. Frogbank’s agent runs both.'],
+  ],
+  llama: [
+    ['Echo Chamber', 30, 30, 'dots', 'Keep the voice bot, cut everything else. Runway to 60 days.'],
+    ['Parrot & Co', 33, 18, 'bring', 'Translate the bot into 6 languages and charge communities to use it.'],
+    ['7xKp…w3Qd', 36, 9, 'bring', 'Voice-note bot for holders; cut burn by 60%.'],
+  ],
+  dust: [],
+  shrmp: [
+    ['Tidepool Labs', 60, 58, 'dots', 'New agent, old community. Stream every decision live.'],
+    ['Krill Capital', 63, 51, 'bring', 'Zombie-themed fishing game with a real prize pool.'],
+    ['Cocktail Sauce', 66, 44, 'bring', 'Recipe channel run by the agent. Brand deals pay the burn.'],
+    ['Bait Shop', 70, 37, 'dots', 'Small and steady: 2 posts a day, budget 0.4 SOL.'],
+    ['Duckworks', 74, 30, 'keep', 'Merge with Duckworks. One agent for both ponds.'],
+    ['8kQe…T3xa', 79, 21, 'bring', 'Horror comic, one page a day, holders vote on the next page.'],
+    ['Deep Sea Fund', 84, 12, 'bring', 'Rebuild as a trading-card game. Cards minted from old memes.'],
+    ['Brine Syndicate', 88, 6, 'dots', 'Keep posting, stop spending. Survive first, then grow.'],
+    ['Shellfish Partners', 92, 2, 'bring', 'Replace the agent, relaunch as a cooking show.'],
+  ],
+}
+
+/** All bids in open auctions, newest first. */
+export const bids: Bid[] = Object.entries(ladders)
+  .flatMap(([companyId, rungs]) => rungs.map(([bidder, amountSol, h, agent, plan], i) => ({ id: `${companyId}-b${i}`, bidder, companyId, amountSol, at: at(h), agent, plan })))
+  .sort((a, b) => Date.parse(b.at) - Date.parse(a.at))
+
+/** One auction's bids, highest first. */
+export const bidsFor = (companyId: string) => bids.filter((b) => b.companyId === companyId).sort((a, b) => b.amountSol - a.amountSol)
 
 export const networkStats: NetworkStats = {
   companies: companies.length,

@@ -5,6 +5,7 @@ import { Home } from '@/pages/Home'
 import { Network } from '@/pages/Network'
 import { CompanyPage } from '@/pages/Company'
 import { Receivership } from '@/pages/Receivership'
+import { AuctionPage } from '@/pages/Auction'
 import { Launch } from '@/pages/Launch'
 import { NotFound } from '@/pages/NotFound'
 
@@ -21,6 +22,7 @@ export default function App() {
               <Route path="network" element={<Network />} />
               <Route path="company/:id" element={<CompanyPage />} />
               <Route path="receivership" element={<Receivership />} />
+              <Route path="receivership/:id" element={<AuctionPage />} />
               <Route path="launch" element={<Launch />} />
               <Route path="*" element={<NotFound />} />
             </Route>

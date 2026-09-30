@@ -1,5 +1,3 @@
-import { TravelLink } from '@/components/motion/TravelLink'
-import { travel } from '@/lib/travel'
 import { useRef } from 'react'
 import { AnimatePresence, m, useInView, useReducedMotion } from 'motion/react'
 import { EASE_OUT } from '@/lib/motion'
@@ -10,6 +8,8 @@ import { critical, usd } from '@/lib/format'
 import { DotGlyph } from '@/components/dots/DotGlyph'
 import { RunwayDots } from '@/components/dots/RunwayDots'
 import { Status } from '@/components/ui/Status'
+import { TravelLink } from '@/components/motion/TravelLink'
+import { travel } from '@/lib/travel'
 
 const cols = 'lg:grid-cols-[minmax(0,1.6fr)_132px_minmax(0,1.3fr)_112px_112px_minmax(0,1.5fr)_16px]'
 

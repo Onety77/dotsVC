@@ -42,7 +42,7 @@ export function Figures({ items, className }: { items: { k: string; v: ReactNode
   return (
     <dl className={cn('mt-10 grid grid-cols-2 border-t border-line sm:grid-cols-3 lg:flex', className)}>
       {items.map((it, i) => (
-        <div key={it.k} className={cn('min-w-0 py-5 pr-4 lg:flex-1 lg:border-l lg:border-line lg:px-6 lg:first:border-l-0 lg:first:pl-0', i % 2 === 1 && 'border-l border-line pl-4 sm:border-l-0 sm:pl-0', i >= 2 && 'border-t border-line sm:border-t-0')}>
+        <div key={it.k} className={cn('min-w-0 py-5 pr-4 lg:flex-1 lg:border-l lg:border-line lg:px-6 lg:first:border-l-0 lg:first:pl-0', i % 2 === 1 && 'border-l border-line pl-4 sm:border-l-0 sm:pl-0', i >= 2 && 'border-t border-line sm:border-t-0', items.length % 2 === 1 && i === items.length - 1 && 'max-sm:col-span-2')}>
           <dt className="text-[13px] text-ink-3">{it.k}</dt>
           <dd className={cn('mt-1.5 truncate font-mono text-[22px] font-medium tracking-[-0.02em] tabular', it.tone === 'red' && 'text-red', it.tone === 'lime' && 'text-lime-text')}>{it.v}</dd>
         </div>

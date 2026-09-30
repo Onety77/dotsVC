@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { bids, getCompany, listings, networkStats, sampleNow } from '@/data/network'
+import { Link, useSearchParams } from 'react-router-dom'
+import { bids, bidsFor, getCompany, listings, networkStats, sampleNow } from '@/data/network'
 import { ago, count, sol } from '@/lib/format'
 import { useDemoState } from '@/lib/hooks'
+import { placeBid, sampleNowMs, useMyBids } from '@/lib/live'
 import { Notice } from '@/components/ui/Notice'
 import { Figures, PageHeader } from '@/components/ui/PageHeader'
 import { Segmented } from '@/components/ui/Segmented'
@@ -26,7 +27,7 @@ export function Receivership() {
   const [params, setParams] = useSearchParams()
   const { address } = useWallet()
   const [tab, setTab] = useState<Tab>('sale')
-  const [myBids, setMyBids] = useState<{ companyId: string; amountSol: number }[]>([])
+  const myBids = useMyBids()
 
   // The bid dialog lives in the URL, so "Place a rescue bid" links from other pages land here with it open.
   const bidFor = params.get('bid')
@@ -37,6 +38,8 @@ export function Receivership() {
   if (bidFor && bidFor !== last) setLast(bidFor)
 
   const source = state === 'empty' ? [] : listings
+  // the latest bids across every open auction
+  const recent = bids.slice(0, 8)
   const totalTop = source.reduce((a, l) => a + Math.max(l.topBidSol ?? 0, myBids.find((b) => b.companyId === l.companyId)?.amountSol ?? 0), 0)
 
   return (
@@ -60,7 +63,7 @@ export function Receivership() {
             onChange={setTab}
             options={[
               { value: 'sale', label: 'For sale', count: source.length },
-              { value: 'bids', label: 'Recent bids', count: bids.length },
+              { value: 'bids', label: 'Recent bids', count: recent.length },
               { value: 'mine', label: 'My bids', count: myBids.length },
             ]}
           />
@@ -81,23 +84,25 @@ export function Receivership() {
               )
             ) : tab === 'bids' ? (
               <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface">
-                {bids.map((b) => {
+                {recent.map((b) => {
                   const c = getCompany(b.companyId)!
                   return (
-                    <li key={b.id} className="grid gap-2 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-6">
-                      <div className="flex min-w-0 items-start gap-3">
-                        <DotGlyph seed={c.ticker} status="distressed" size={36} />
-                        <div className="min-w-0">
-                          <p className="text-[15px]">
-                            <span className="font-semibold">{b.bidder}</span> <span className="text-ink-3">bid on</span> <span className="font-semibold">{c.name}</span>
-                          </p>
-                          <p className="mt-1 text-[14px] text-ink-2">“{b.plan}”</p>
+                    <li key={b.id}>
+                      <Link to={`/receivership/${c.id}`} className="grid gap-2 p-5 transition-colors hover-device:hover:bg-hover sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-6">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <DotGlyph seed={c.ticker} status="distressed" size={36} />
+                          <div className="min-w-0">
+                            <p className="text-[15px]">
+                              <span className="font-semibold">{b.bidder}</span> <span className="text-ink-3">bid on</span> <span className="font-semibold">{c.name}</span>
+                            </p>
+                            <p className="mt-1 text-[14px] text-ink-2">“{b.plan}”</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-baseline gap-3 pl-12 sm:flex-col sm:items-end sm:gap-1 sm:pl-0">
-                        <span className="font-mono">{sol(b.amountSol, 0)}</span>
-                        <span className="font-mono text-[12px] text-ink-4">{ago(b.at, sampleNow)}</span>
-                      </div>
+                        <div className="flex items-baseline gap-3 pl-12 sm:flex-col sm:items-end sm:gap-1 sm:pl-0">
+                          <span className="font-mono">{sol(b.amountSol, 0)}</span>
+                          <span className="font-mono text-[12px] text-ink-4">{ago(b.at, sampleNow)}</span>
+                        </div>
+                      </Link>
                     </li>
                   )
                 })}
@@ -110,16 +115,23 @@ export function Receivership() {
               <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface">
                 {myBids.map((b) => {
                   const c = getCompany(b.companyId)!
+                  const leading = b.amountSol >= (bidsFor(c.id)[0]?.amountSol ?? 0)
                   return (
-                    <li key={b.companyId} className="flex items-center justify-between gap-4 p-5">
-                      <span className="flex items-center gap-3">
-                        <DotGlyph seed={c.ticker} status="distressed" size={36} />
-                        <span className="font-semibold">{c.name}</span>
-                      </span>
-                      <span className="flex items-center gap-3">
-                        <span className="font-mono">{sol(b.amountSol, 0)}</span>
-                        <span className="rounded-full bg-lime-soft px-2.5 py-1 font-mono text-[11px] text-lime-text">TOP BID</span>
-                      </span>
+                    <li key={b.companyId}>
+                      <Link to={`/receivership/${c.id}`} className="flex items-center justify-between gap-4 p-5 transition-colors hover-device:hover:bg-hover">
+                        <span className="flex items-center gap-3">
+                          <DotGlyph seed={c.ticker} status="distressed" size={36} />
+                          <span className="font-semibold">{c.name}</span>
+                        </span>
+                        <span className="flex items-center gap-3">
+                          <span className="font-mono">{sol(b.amountSol, 0)}</span>
+                          {leading ? (
+                            <span className="rounded-full bg-lime-soft px-2.5 py-1 font-mono text-[11px] text-lime-text">TOP BID</span>
+                          ) : (
+                            <span className="rounded-full bg-red-soft px-2.5 py-1 font-mono text-[11px] text-red">OUTBID</span>
+                          )}
+                        </span>
+                      </Link>
                     </li>
                   )
                 })}
@@ -159,7 +171,7 @@ export function Receivership() {
         listing={listings.find((l) => l.companyId === last)}
         onSubmit={async (b) => {
           await wait(900)
-          setMyBids((xs) => [...xs.filter((x) => x.companyId !== b.companyId), { companyId: b.companyId, amountSol: b.amountSol }])
+          placeBid({ companyId: b.companyId, amountSol: b.amountSol, plan: b.plan, agent: b.agent as 'bring' | 'dots' | 'keep', at: sampleNowMs() })
         }}
       />
     </>

@@ -1,5 +1,3 @@
-import { TravelLink } from '@/components/motion/TravelLink'
-import { travel } from '@/lib/travel'
 import type { Company, Listing } from '@/types'
 import { cn } from '@/lib/cn'
 import { sol, usd } from '@/lib/format'
@@ -8,6 +6,8 @@ import { Rolling } from '@/components/motion/Rolling'
 import { DotGlyph } from '@/components/dots/DotGlyph'
 import { RunwayDots } from '@/components/dots/RunwayDots'
 import { Button } from '@/components/ui/Button'
+import { TravelLink } from '@/components/motion/TravelLink'
+import { travel } from '@/lib/travel'
 
 /**
  * A company for sale: why it failed, how long it has, and the auction.
@@ -32,7 +32,7 @@ export function ListingCard({
   return (
     <article className={cn('flex flex-col rounded-card border border-line bg-surface p-5', className)}>
       <div className="flex items-start justify-between gap-3">
-        <TravelLink to={`/company/${company.id}`} travelId={company.id} className="flex min-w-0 items-center gap-3 rounded-md">
+        <TravelLink to={`/receivership/${company.id}`} travelId={company.id} className="flex min-w-0 items-center gap-3 rounded-md">
           <DotGlyph seed={company.ticker} status="distressed" size={44} src={company.image} travelId={company.id} />
           <span className="min-w-0">
             <span className="block w-fit max-w-full truncate text-[17px] font-semibold" {...travel('name', company.id)}>
