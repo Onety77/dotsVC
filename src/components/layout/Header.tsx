@@ -89,7 +89,7 @@ export function Header() {
             <ul className="flex flex-col">
               {[{ to: '/', label: 'Home' }, ...nav].map((n, i) => (
                 <m.li key={n.to} className="border-b border-line" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.04 + i * 0.05, ease: EASE_OUT }}>
-                  <NavLink to={n.to} end className={({ isActive }) => cn('flex h-16 items-center justify-between text-[28px] font-semibold tracking-[-0.03em]', !isActive && 'text-ink-2')}>
+                  <NavLink to={n.to} end className={({ isActive }) => cn('flex h-16 items-center justify-between font-display text-[28px] font-semibold tracking-[-0.03em]', !isActive && 'text-ink-2')}>
                     {({ isActive }) => (
                       <>
                         {n.label}
@@ -100,7 +100,7 @@ export function Header() {
                 </m.li>
               ))}
               <li className="border-b border-line">
-                <a href={docsUrl} target="_blank" rel="noreferrer" className="flex h-16 items-center gap-2 text-[28px] font-semibold tracking-[-0.03em] text-ink-2">
+                <a href={docsUrl} target="_blank" rel="noreferrer" className="flex h-16 items-center gap-2 font-display text-[28px] font-semibold tracking-[-0.03em] text-ink-2">
                   Docs <ArrowUpRight className="size-5" />
                 </a>
               </li>

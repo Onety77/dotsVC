@@ -29,7 +29,7 @@ export function Logo({ className, lively = false }: { className?: string; lively
   return (
     <span className={cn('inline-flex items-center gap-2', className)} onMouseEnter={lively ? () => setTurns((t) => t + 1) : undefined}>
       <LogoMark turns={turns} />
-      <span className="text-[19px] font-bold tracking-[-0.04em]">dotco</span>
+      <span className="font-display text-[19px] font-bold tracking-[-0.04em]">dotco</span>
     </span>
   )
 }

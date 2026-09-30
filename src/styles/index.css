@@ -96,7 +96,8 @@
 }
 
 @theme {
-  --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, "SFMono-Regular", monospace;
 
   --text-display: clamp(2.75rem, 1.6rem + 5vw, 5.75rem);
@@ -156,7 +157,9 @@
     -webkit-tap-highlight-color: transparent;
   }
   body { min-height: 100svh; overflow-x: clip; }
-  h1, h2, h3 { text-wrap: balance; }
+  /* short pages keep the footer at the bottom of the screen */
+  #root { min-height: 100svh; display: flex; flex-direction: column; }
+  h1, h2, h3 { text-wrap: balance; font-family: var(--font-display); }
   p { text-wrap: pretty; }
   ::selection { background: var(--lime); color: var(--on-lime); }
   :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 6px; }
@@ -204,6 +207,11 @@
 .dot-wave > :nth-child(2) { animation-delay: 0.15s; }
 .dot-wave > :nth-child(3) { animation-delay: 0.3s; }
 
+/* the activity ticker on home: two copies of the list slide by; pointing at it pauses it */
+@keyframes ticker { to { transform: translateX(-50%); } }
+.ticker-track { animation: ticker 90s linear infinite; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+
 /* a new row flashes its colour, then settles (trades) */
 @keyframes flash { from { background: var(--flash); } }
 .flash { animation: flash 1.8s ease-out; }
@@ -234,6 +242,9 @@ html[data-vt="travel"]::view-transition-new(root) { animation: vt-in 0.3s ease b
 @media (prefers-reduced-motion: reduce) {
   .skeleton, .breathe, .flatline, .heartbeat, .live-dot::after, .dot-wave > *, .caret, .flash { animation: none; }
   .glyph circle, .runway-dot { transition: none; }
+  .ticker { overflow-x: auto; mask-image: none; }
+  .ticker-track { animation: none; }
+  .ticker-track > [aria-hidden] { display: none; }
   .glyph[data-seen="false"] circle { transform: none; opacity: 1; }
   .glyph-ripple { display: none; }
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }

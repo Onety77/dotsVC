@@ -5,6 +5,7 @@ import type { Company } from '@/types'
 import { companies } from '@/data/network'
 import { EASE_OUT, SPRING_POP } from '@/lib/motion'
 import { DotsLoader } from '@/components/motion/DotsLoader'
+import { DotGlyph } from '@/components/dots/DotGlyph'
 import { NetworkField } from '@/components/dots/NetworkField'
 import { cn } from '@/lib/cn'
 import { sol } from '@/lib/format'
@@ -119,6 +120,21 @@ export function Launch() {
       />
       <div className="wrap grid gap-10 py-10 lg:grid-cols-12 [&>*]:min-w-0 lg:gap-12 lg:py-12">
         <div className="min-w-0 lg:col-span-7">
+          {/* phones: the company takes shape at the top of the screen while you type */}
+          {!done && (
+            <div className="sticky top-16 z-20 -mx-5 mb-6 border-b border-line bg-[color-mix(in_srgb,var(--bg)_88%,transparent)] px-5 py-3 backdrop-blur-md sm:-mx-8 sm:px-8 lg:hidden" aria-hidden>
+              <div className="flex items-center gap-3">
+                <DotGlyph seed={d.ticker || 'TICKER'} status="active" size={40} src={d.image} />
+                <div className="min-w-0 flex-1">
+                  <p className={cn('truncate font-semibold tracking-[-0.01em]', !d.name && 'text-ink-3')}>{d.name || 'Your company'}</p>
+                  <p className="font-mono text-[12px] text-ink-3">${d.ticker || 'TICKER'}</p>
+                </div>
+                <span className="font-mono text-[11px] text-ink-4">
+                  {step + 1} / {STEPS.length}
+                </span>
+              </div>
+            </div>
+          )}
           <StepDots steps={STEPS} current={done ? STEPS.length : step} onSelect={progress < 0 ? setStep : undefined} />
 
           <div className="mt-10">

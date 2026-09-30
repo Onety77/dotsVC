@@ -5,11 +5,11 @@ import { sol } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Section, SectionHead } from '@/components/ui/Section'
 import { AgentConsole } from '@/components/company/AgentConsole'
-import { CompanyTable } from '@/components/company/CompanyTable'
 import { ListingCard } from '@/components/company/ListingCard'
 import { Hero } from '@/components/sections/Hero'
 import { Lifecycle } from '@/components/sections/Lifecycle'
 import { StatsStrip } from '@/components/sections/StatsStrip'
+import { ActivityStrip } from '@/components/sections/ActivityStrip'
 import { docsUrl } from '@/components/layout/nav'
 import { Item, Reveal, Stagger } from '@/components/motion/Reveal'
 import { DotPeriod, MaskLine } from '@/components/motion/Headline'
@@ -22,34 +22,15 @@ const guarantees = [
 
 export function Home() {
   const navigate = useNavigate()
-  const ranked = companies.filter((c) => c.status !== 'distressed').sort((a, b) => b.runwayDays - a.runwayDays).slice(0, 6)
   const forSale = listings.slice(0, 3)
   const frog = getCompany('frog')!
 
   return (
     <>
       <Hero companies={companies} />
+      <ActivityStrip />
       <StatsStrip stats={networkStats} />
       <Lifecycle />
-
-      <Section labelledBy="portfolio-title">
-        <SectionHead
-          label="The network"
-          id="portfolio-title"
-          title={
-            <>
-              Ranked by how long <span className="text-ink-3">they’ll survive.</span>
-            </>
-          }
-          sub="Every company’s treasury, fees and runway are public. So is what its agent is working on right now."
-          action={
-            <Button to="/network" arrow>
-              All {companies.length} companies
-            </Button>
-          }
-        />
-        <CompanyTable companies={ranked} className="mt-12" />
-      </Section>
 
       <Section labelledBy="rescue-title">
         <SectionHead

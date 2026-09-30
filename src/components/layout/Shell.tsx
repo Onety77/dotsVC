@@ -19,7 +19,7 @@ export function Shell() {
         Skip to content
       </a>
       <Header />
-      <main id="main">
+      <main id="main" className="flex-1">
         {/* each page fades up on arrival; no exit wait, so navigation never feels slow */}
         <m.div key={pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE_OUT }}>
           <Outlet />
