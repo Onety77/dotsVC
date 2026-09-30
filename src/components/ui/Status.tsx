@@ -9,7 +9,7 @@ export function StatusDot({ status, className }: { status: CompanyStatus; classN
       aria-hidden
       className={cn(
         'inline-block size-2 shrink-0 rounded-full',
-        status === 'active' && 'bg-lime shadow-[0_0_0_3px_var(--lime-soft)]',
+        status === 'active' && 'bg-alive shadow-[0_0_0_3px_var(--lime-soft)]',
         status === 'paused' && 'border-[1.5px] border-ink-3',
         status === 'distressed' && 'bg-red shadow-[0_0_0_3px_var(--red-soft)]',
         className,

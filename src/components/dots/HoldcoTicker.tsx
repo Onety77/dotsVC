@@ -10,7 +10,7 @@ export function HoldcoTicker({ className }: { className?: string }) {
   const v = useHoldcoTreasury()
   return (
     <p className={cn('flex items-center gap-2.5 font-mono text-[12px] text-ink-3', className)}>
-      <span className="live-dot size-1.5 rounded-full bg-lime text-lime" aria-hidden />
+      <span className="live-dot size-1.5 rounded-full bg-alive text-alive" aria-hidden />
       <span>Holdco treasury</span>
       <Rolling value={v} text={sol(v, 3)} className="text-ink" />
     </p>

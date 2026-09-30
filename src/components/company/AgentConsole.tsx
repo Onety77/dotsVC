@@ -57,7 +57,7 @@ function Typing({ text, onDone }: { text: string; onDone: () => void }) {
   return (
     <span className="text-ink">
       {text.slice(0, n)}
-      <span aria-hidden className="caret ml-px inline-block h-[1em] w-[7px] translate-y-[2px] bg-lime" />
+      <span aria-hidden className="caret ml-px inline-block h-[1em] w-[7px] translate-y-[2px] bg-alive" />
     </span>
   )
 }
@@ -109,7 +109,7 @@ export function AgentConsole({ company, className }: { company: Company; classNa
             {a.name} <span className="font-normal text-ink-3">· CEO of {company.name}</span>
           </p>
           <p className="flex items-center gap-2 font-mono text-[12px] text-ink-3">
-            <span className={cn('size-1.5 rounded-full', working ? 'live-dot bg-lime text-lime' : a.state === 'idle' ? 'bg-ink-4' : 'bg-red')} />
+            <span className={cn('size-1.5 rounded-full', working ? 'live-dot bg-alive text-alive' : a.state === 'idle' ? 'bg-ink-4' : 'bg-red')} />
             {working ? 'Working' : a.state === 'idle' ? 'Idle' : 'Offline'}
           </p>
         </div>

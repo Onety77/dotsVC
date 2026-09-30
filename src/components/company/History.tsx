@@ -31,7 +31,7 @@ export function History({ company: c }: { company: Company }) {
               />
             )}
             <m.span
-              className={cn('mt-1.5 size-2.5 rounded-full', latest ? (c.status === 'distressed' ? 'bg-red text-red' : 'bg-lime text-lime') : 'bg-ink-4', latest && c.status !== 'paused' && 'live-dot')}
+              className={cn('mt-1.5 size-2.5 rounded-full', latest ? (c.status === 'distressed' ? 'bg-red text-red' : 'bg-alive text-alive') : 'bg-ink-4', latest && c.status !== 'paused' && 'live-dot')}
               initial={reduced ? false : { scale: 0 }}
               animate={go ? { scale: 1 } : undefined}
               transition={{ ...SPRING_POP, delay: i * 0.12 }}

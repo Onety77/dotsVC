@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { TravelLink } from '@/components/motion/TravelLink'
+import { travel } from '@/lib/travel'
 import type { Company, Listing } from '@/types'
 import { cn } from '@/lib/cn'
 import { sol, usd } from '@/lib/format'
@@ -31,13 +32,15 @@ export function ListingCard({
   return (
     <article className={cn('flex flex-col rounded-card border border-line bg-surface p-5', className)}>
       <div className="flex items-start justify-between gap-3">
-        <Link to={`/company/${company.id}`} className="flex min-w-0 items-center gap-3 rounded-md">
-          <DotGlyph seed={company.ticker} status="distressed" size={44} src={company.image} />
+        <TravelLink to={`/company/${company.id}`} travelId={company.id} className="flex min-w-0 items-center gap-3 rounded-md">
+          <DotGlyph seed={company.ticker} status="distressed" size={44} src={company.image} travelId={company.id} />
           <span className="min-w-0">
-            <span className="block truncate text-[17px] font-semibold">{company.name}</span>
+            <span className="block w-fit max-w-full truncate text-[17px] font-semibold" {...travel('name', company.id)}>
+              {company.name}
+            </span>
             <span className="block font-mono text-[12px] text-ink-3">${company.ticker}</span>
           </span>
-        </Link>
+        </TravelLink>
         <span className="rounded-full bg-red-soft px-2.5 py-1 font-mono text-[11px] tracking-[0.06em] text-red">FOR SALE</span>
       </div>
       <p className="mt-4 text-[15px] text-ink-2">{listing.reason}</p>

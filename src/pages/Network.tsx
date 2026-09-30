@@ -66,7 +66,7 @@ export function Network() {
       <section aria-label="Network map" className="border-b border-line">
         <div className="wrap py-10 lg:py-12">
           {state === 'loading' ? (
-            <div className="skeleton aspect-[1000/660] w-full" />
+            <div className="skeleton aspect-[1000/540] w-full" />
           ) : state === 'error' ? (
             <Notice kind="error" title="The network map didn’t load." body="The indexer didn’t answer. Nothing has changed on-chain." />
           ) : source.length === 0 ? (
@@ -97,7 +97,7 @@ export function Network() {
             ]}
           />
           <div className="flex gap-2">
-            <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-line-2 px-4 focus-within:border-ink-3 lg:w-64 lg:flex-none">
+            <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-full border border-line-2 bg-surface px-4 focus-within:border-ink-3 lg:w-64 lg:flex-none">
               <Search className="size-4 text-ink-4" />
               <span className="sr-only">Search companies</span>
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name or $TICKER" className="min-w-0 flex-1 bg-transparent text-base outline-none sm:text-sm" />
@@ -107,7 +107,7 @@ export function Network() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as Sort)}
-                className="h-10 appearance-none rounded-full border border-line-2 bg-bg pr-9 pl-4 text-sm font-medium focus:border-ink-3 focus:outline-none"
+                className="h-10 appearance-none rounded-full border border-line-2 bg-surface pr-9 pl-4 text-sm font-medium focus:border-ink-3 focus:outline-none"
               >
                 <option value="runway">Longest runway</option>
                 <option value="fees">Most fees</option>

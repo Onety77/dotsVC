@@ -1,22 +1,20 @@
-import { lazy } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { LazyMotion, MotionConfig, domMax } from 'motion/react'
 import { Shell } from '@/components/layout/Shell'
 import { Home } from '@/pages/Home'
-
-// Home ships in the first bundle; the app pages load when first visited.
-const Network = lazy(() => import('@/pages/Network').then((m) => ({ default: m.Network })))
-const CompanyPage = lazy(() => import('@/pages/Company').then((m) => ({ default: m.CompanyPage })))
-const Receivership = lazy(() => import('@/pages/Receivership').then((m) => ({ default: m.Receivership })))
-const Launch = lazy(() => import('@/pages/Launch').then((m) => ({ default: m.Launch })))
-const NotFound = lazy(() => import('@/pages/NotFound').then((m) => ({ default: m.NotFound })))
+import { Network } from '@/pages/Network'
+import { CompanyPage } from '@/pages/Company'
+import { Receivership } from '@/pages/Receivership'
+import { Launch } from '@/pages/Launch'
+import { NotFound } from '@/pages/NotFound'
 
 export default function App() {
   return (
     <LazyMotion features={domMax} strict>
       {/* reduced motion: transforms drop, fades stay; loops check useReducedMotion() themselves */}
       <MotionConfig reducedMotion="user">
-        <BrowserRouter>
+        {/* sync navigations, so a page change can run inside a View Transition (TravelLink) */}
+        <BrowserRouter useTransitions={false}>
           <Routes>
             <Route element={<Shell />}>
               <Route index element={<Home />} />

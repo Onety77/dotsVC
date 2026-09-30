@@ -93,7 +93,7 @@ export function Header() {
                     {({ isActive }) => (
                       <>
                         {n.label}
-                        {isActive && <span className="size-2.5 rounded-full bg-lime" />}
+                        {isActive && <span className="size-2.5 rounded-full bg-alive" />}
                       </>
                     )}
                   </NavLink>

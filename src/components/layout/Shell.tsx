@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { m } from 'motion/react'
 import { EASE_OUT } from '@/lib/motion'
@@ -22,9 +22,7 @@ export function Shell() {
       <main id="main">
         {/* each page fades up on arrival; no exit wait, so navigation never feels slow */}
         <m.div key={pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: EASE_OUT }}>
-          <Suspense fallback={<div className="min-h-[70svh]" />}>
-            <Outlet />
-          </Suspense>
+          <Outlet />
         </m.div>
       </main>
       <Footer variant={pathname === '/' ? 'full' : 'compact'} />

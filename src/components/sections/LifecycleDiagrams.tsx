@@ -49,20 +49,20 @@ export function LaunchDiagram() {
             cx={160}
             cy={50}
             r={12}
-            fill="var(--lime)"
+            fill="var(--alive)"
             style={svgOrigin}
             initial={{ scale: 0 }}
             animate={{ scale: [0, 0, 1.18, 1, 1, 0] }}
             transition={{ ...loop, times: [0, 0.34, 0.42, 0.5, 0.9, 0.97], ease: 'easeOut' }}
           />
           <m.circle cx={160} cy={50} fill="none" stroke="var(--pulse)" initial={{ r: 12, opacity: 0 }} animate={{ r: [12, 12, 30], opacity: [0, 0.7, 0] }} transition={{ ...loop, times: [0, 0.42, 0.78], ease: 'easeOut' }} />
-          <m.circle cx={160} cy={50} r={20} fill="none" stroke="var(--lime)" initial={{ opacity: 0 }} animate={{ opacity: [0, 0, 0.35, 0.35, 0] }} transition={{ ...loop, times: [0, 0.6, 0.7, 0.9, 0.97] }} />
+          <m.circle cx={160} cy={50} r={20} fill="none" stroke="var(--alive)" initial={{ opacity: 0 }} animate={{ opacity: [0, 0, 0.35, 0.35, 0] }} transition={{ ...loop, times: [0, 0.6, 0.7, 0.9, 0.97] }} />
         </>
       ) : (
         <>
           <line x1="35" y1="50" x2="150" y2="50" stroke="var(--ink)" strokeOpacity="0.2" strokeDasharray="2 5" strokeLinecap="round" />
-          <circle cx="160" cy="50" r="12" fill="var(--lime)" />
-          <circle cx="160" cy="50" r="20" fill="none" stroke="var(--lime)" strokeOpacity="0.35" />
+          <circle cx="160" cy="50" r="12" fill="var(--alive)" />
+          <circle cx="160" cy="50" r="20" fill="none" stroke="var(--alive)" strokeOpacity="0.35" />
         </>
       )}
     </Frame>
@@ -93,20 +93,20 @@ export function HireDiagram() {
               key={`out-${i}`}
               cy={50}
               r={2.4}
-              fill="var(--lime)"
+              fill="var(--alive)"
               initial={{ cx: 114, opacity: 0 }}
               animate={{ cx: [114, 182], opacity: [0, 1, 1, 0] }}
               transition={{ duration: 2.4, delay: 0.5 + i * 0.8, repeat: Infinity, ease: 'easeOut', opacity: { duration: 2.4, delay: 0.5 + i * 0.8, repeat: Infinity, times: [0, 0.15, 0.7, 1] } }}
             />
           ))}
-          <circle cx="100" cy="50" r="12" fill="var(--lime)" />
+          <circle cx="100" cy="50" r="12" fill="var(--alive)" />
           <m.g style={{ transformBox: 'view-box', transformOrigin: '100px 50px' }} animate={{ rotate: 360 }} transition={{ duration: 7, repeat: Infinity, ease: 'linear' }}>
             <circle cx="130" cy="50" r="5" fill="var(--ink)" />
           </m.g>
         </>
       ) : (
         <>
-          <circle cx="100" cy="50" r="12" fill="var(--lime)" />
+          <circle cx="100" cy="50" r="12" fill="var(--alive)" />
           <circle cx="130" cy="50" r="5" fill="var(--ink)" />
           {[0, 1, 2].map((i) => (
             <circle key={`a-${i}`} cx={40 + i * 8} cy="50" r="2.4" fill="var(--ink)" opacity={0.25 + i * 0.25} />
@@ -167,7 +167,7 @@ export function EarnDiagram() {
       {Array.from({ length: 12 }, (_, i) => (
         <circle key={i} cx={dotX(i)} cy="50" r="4.5" fill={i < (play ? lit : 8) ? 'var(--ink)' : 'var(--dot-dim)'} style={{ transition: 'fill 0.3s ease' }} />
       ))}
-      <path d="M24 26 H 122" stroke="var(--lime)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M24 26 H 122" stroke="var(--alive)" strokeWidth="2" strokeLinecap="round" />
       <text x="24" y="20" className="fill-ink-3 font-mono text-[10px]">
         FEES IN
       </text>
@@ -230,7 +230,7 @@ export function SurviveDiagram() {
           <m.line x1={172} x2={183} y1={50} y2={50} stroke="var(--ink)" initial={{ strokeOpacity: 0 }} animate={{ strokeOpacity: [0, 0, 0.5, 0.5] }} transition={loop([0, 0.72, 0.76, 1])} />
           {/* the company: alive, then red, drifting out, then alive again under new owners */}
           <m.g initial={{ x: 0 }} animate={{ x: [0, 0, 66, 66] }} transition={loop([0, 0.28, 0.5, 1], ['linear', 'easeInOut', 'linear'])}>
-            <circle cx={96} cy={50} r={10} fill="var(--lime)" />
+            <circle cx={96} cy={50} r={10} fill="var(--alive)" />
             <m.circle cx={96} cy={50} r={10} fill="var(--red)" initial={{ opacity: 0 }} animate={{ opacity: [0, 0, 1, 1, 0, 0] }} transition={loop([0, 0.18, 0.26, 0.78, 0.84, 1])} />
             <m.circle cx={96} cy={50} fill="none" stroke="var(--pulse)" strokeWidth={1.5} initial={{ r: 10, opacity: 0 }} animate={{ r: [10, 10, 24, 24], opacity: [0, 0, 0.8, 0, 0] }} transition={{ r: loop([0, 0.8, 0.94, 1]), opacity: loop([0, 0.79, 0.8, 0.94, 1]) }} />
           </m.g>

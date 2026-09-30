@@ -28,7 +28,7 @@ export function DotGrid({ className }: { className?: string }) {
 
     const colours = () => {
       const s = getComputedStyle(document.documentElement)
-      dim = s.getPropertyValue('--line-2').trim()
+      dim = s.getPropertyValue('--grid').trim()
       lit = s.getPropertyValue('--ink').trim()
     }
 

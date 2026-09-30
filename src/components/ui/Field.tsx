@@ -1,7 +1,7 @@
 import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react'
 import { cn } from '@/lib/cn'
 
-const box = 'rounded-[14px] border bg-transparent px-4 text-base outline-none transition-colors focus:border-ink-3 sm:text-[15px]'
+const box = 'rounded-[14px] border bg-surface px-4 text-base outline-none transition-colors focus:border-ink-3 sm:text-[15px]'
 
 export function TextField({ label, hint, error, prefix, className, ...rest }: { label: string; hint?: string; error?: string; prefix?: ReactNode } & InputHTMLAttributes<HTMLInputElement>) {
   const id = useId()

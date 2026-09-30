@@ -134,7 +134,7 @@ export function Receivership() {
             <ol className="mt-5 grid gap-5">
               {steps.map((s, i) => (
                 <li key={s.t} className="grid grid-cols-[22px_1fr] gap-3">
-                  <span className={`mt-1.5 size-2.5 rounded-full ${i === 0 ? 'bg-red' : i === 1 ? 'border-[1.5px] border-ink-3' : 'bg-lime'}`} />
+                  <span className={`mt-1.5 size-2.5 rounded-full ${i === 0 ? 'bg-red' : i === 1 ? 'border-[1.5px] border-ink-3' : 'bg-alive'}`} />
                   <span>
                     <span className="block font-semibold">{s.t}</span>
                     <span className="mt-1 block text-[14px] text-ink-2">{s.b}</span>

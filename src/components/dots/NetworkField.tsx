@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AnimatePresence, m, useInView, useReducedMotion } from 'motion/react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, RotateCcw } from 'lucide-react'
 import type { Company } from '@/types'
 import { cn } from '@/lib/cn'
 import { useMedia } from '@/lib/useMedia'
@@ -14,8 +14,9 @@ import { RunwayDots } from './RunwayDots'
 import { Status } from '@/components/ui/Status'
 
 /** Two geometries: a wide map for desktop, a squarer one with bigger type for phones. */
-const WIDE = { W: 1000, H: 660, SX: 1.45, font: 13, small: 12, pulse: 3.2 }
-const NARROW = { W: 640, H: 700, SX: 0.98, font: 20, small: 17, pulse: 5 }
+/** SX / SY stretch the rings into ovals so the whole map fits the first screen. */
+const WIDE = { W: 1000, H: 540, SX: 1.45, SY: 0.8, font: 13, small: 12, pulse: 3.2 }
+const NARROW = { W: 640, H: 580, SX: 0.98, SY: 0.86, font: 20, small: 17, pulse: 5 }
 const RECEIVERSHIP = 290
 /** where a failing company sat just before it was cut loose */
 const FORMER = 214
@@ -33,12 +34,24 @@ const T = {
   fallFor: 1.5,
 }
 
+/** The angle halfway between two living companies, spreading `n` failures evenly over the free gaps. */
+function gapAngle(i: number, n: number, living: number) {
+  const step = (2 * Math.PI) / Math.max(living, 1)
+  const mid = (g: number) => -Math.PI / 2 + (g + 1) * step
+  const clearOfLabel = (a: number) => Math.abs(Math.atan2(Math.sin(a + Math.PI / 2), Math.cos(a + Math.PI / 2))) > 0.35
+  const free = Array.from({ length: Math.max(living, 1) }, (_, g) => g).filter((g) => clearOfLabel(mid(g)))
+  if (free.length < n) return -Math.PI / 2 + (i + 0.25) * ((2 * Math.PI) / n) + 0.35
+  return mid(free[Math.floor(((i + 0.5) * free.length) / n)])
+}
+
 interface Placed {
   c: Company
   x: number
   y: number
   r: number
+  /** which way the tooltip opens: toward the centre */
   side: 1 | -1
+  label: { x: number; y: number; anchor: 'start' | 'end' | 'middle' }
   ring: number
   /** index within its group (living, or in receivership) */
   k: number
@@ -68,7 +81,20 @@ interface Pulse {
  *   to see its own fees flow.
  * Under reduced motion it renders the end state, still.
  */
-export function NetworkField({ companies, className, delay = 0, highlight }: { companies: Company[]; className?: string; delay?: number; highlight?: string }) {
+export function NetworkField(props: FieldProps) {
+  // Replay re-mounts the map, so the whole intro plays again from the first frame
+  const [take, setTake] = useState(0)
+  return <Field key={take} {...props} onReplay={() => setTake((t) => t + 1)} />
+}
+
+interface FieldProps {
+  companies: Company[]
+  className?: string
+  delay?: number
+  highlight?: string
+}
+
+function Field({ companies, className, delay = 0, highlight, onReplay }: FieldProps & { onReplay: () => void }) {
   const navigate = useNavigate()
   const ref = useRef<HTMLDivElement>(null)
   const seen = useInView(ref, { once: true, amount: 0.3 })
@@ -84,7 +110,7 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
   })
 
   const wide = useMedia('(min-width: 640px)')
-  const { W, H, SX, font, small, pulse: pulseR } = wide ? WIDE : NARROW
+  const { W, H, SX, SY, font, small, pulse: pulseR } = wide ? WIDE : NARROW
   const CX = W / 2
   const CY = H / 2
 
@@ -92,24 +118,49 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
     const live = companies.filter((c) => c.status !== 'distressed').sort((a, b) => b.treasurySol - a.treasurySol)
     const out = companies.filter((c) => c.status === 'distressed')
     const maxRunway = Math.max(...live.map((c) => c.runwayDays), 1)
-    const at = (angle: number, ring: number) => ({ x: CX + Math.cos(angle) * ring * SX, y: CY + Math.sin(angle) * ring })
+    const at = (angle: number, ring: number) => ({ x: CX + Math.cos(angle) * ring * SX, y: CY + Math.sin(angle) * ring * SY })
     const place = (c: Company, k: number, angle: number, ring: number, from?: number): Placed => {
       const { x, y } = at(angle, ring)
       const r = 5 + Math.sqrt(c.treasurySol) * 0.55
-      // labels point outward, unless that would run off the edge of the map
-      const labelW = (c.ticker.length + 1) * font * 0.62 + r + 10
-      let side: 1 | -1 = Math.cos(angle) >= 0 ? 1 : -1
-      if (side === 1 && x + labelW > W) side = -1
-      if (side === -1 && x - labelW < 0) side = 1
-      return { c, x, y, r, side, ring, k, phase: seeded(c.id)(), from: from ? at(angle, from) : undefined }
+      return { c, x, y, r, side: x >= CX ? 1 : -1, label: { x, y, anchor: 'start' }, ring, k, phase: seeded(c.id)(), from: from ? at(angle, from) : undefined }
     }
-    return [
+    const all = [
       // spread the living companies around the circle; runway sets the distance
       ...live.map((c, i) => place(c, i, -Math.PI / 2 + (i + 0.5) * ((2 * Math.PI) / live.length), 108 + (1 - c.runwayDays / maxRunway) * 140)),
-      // the distressed sit on the receivership ring, offset so they fall between the others
-      ...out.map((c, i) => place(c, i, -Math.PI / 2 + (i + 0.25) * ((2 * Math.PI) / out.length) + 0.35, RECEIVERSHIP, FORMER)),
+      // the distressed sit in the gaps between living companies (never under the ring's label at
+      // the top), so neither their fall nor their resting place crowds anyone
+      ...out.map((c, i) => place(c, i, gapAngle(i, out.length, live.length), RECEIVERSHIP, FORMER)),
     ]
-  }, [companies, CX, CY, SX, W, font])
+
+    // Labels: try outside, then inside, then above, then below, and take the first spot that
+    // stays on the map and clears every other label, every dot and the holdco.
+    type Box = { x0: number; x1: number; y0: number; y1: number; own?: Placed }
+    const hit = (a: Box, b: Box) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1
+    const taken: Box[] = [
+      { x0: CX - 46, x1: CX + 46, y0: CY - 46, y1: CY + 46 },
+      { x0: CX - small * 4.4, x1: CX + small * 4.4, y0: CY + 62 - small, y1: CY + 66 },
+      { x0: CX - small * 4.6, x1: CX + small * 4.6, y0: CY - RECEIVERSHIP * SY - 10 - small, y1: CY - RECEIVERSHIP * SY - 6 },
+      ...all.map((p) => ({ x0: p.x - p.r - 3, x1: p.x + p.r + 3, y0: p.y - p.r - 3, y1: p.y + p.r + 3, own: p })),
+    ]
+    for (const p of all) {
+      const tw = (p.c.ticker.length + 1) * font * 0.62
+      const outward: 1 | -1 = p.x >= CX ? 1 : -1
+      const beside = (s: 1 | -1) => {
+        const x = p.x + (p.r + 8) * s
+        return { box: { x0: s === 1 ? x : x - tw, x1: s === 1 ? x + tw : x, y0: p.y - font * 0.62, y1: p.y + font * 0.45 }, label: { x, y: p.y + font * 0.32, anchor: s === 1 ? ('start' as const) : ('end' as const) } }
+      }
+      const stacked = (s: 1 | -1) => {
+        const y = s === -1 ? p.y - p.r - 7 : p.y + p.r + font * 0.95
+        return { box: { x0: p.x - tw / 2, x1: p.x + tw / 2, y0: y - font * 0.8, y1: y + 2 }, label: { x: p.x, y, anchor: 'middle' as const } }
+      }
+      const options = [beside(outward), beside(-outward as 1 | -1), stacked(-1), stacked(1)]
+      const fits = (b: Box) => b.x0 >= 2 && b.x1 <= W - 2 && b.y0 >= 2 && b.y1 <= H - 2 && !taken.some((t) => t.own !== p && hit(b, t))
+      const pick = options.find((o) => fits(o.box)) ?? options.find((o) => o.box.x0 >= 2 && o.box.x1 <= W - 2) ?? options[0]
+      p.label = pick.label
+      taken.push(pick.box)
+    }
+    return all
+  }, [companies, CX, CY, SX, SY, W, H, font, small])
   const failing = placed.filter((p) => p.c.status === 'distressed')
 
   // ── the intro timeline ──
@@ -152,7 +203,7 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
       const dur = 0.75 + Math.hypot(p.x - CX, p.y - CY) / 480
       const share = 0.004 + Math.random() * 0.018 * (p.c.fees30dUsd / 200_000)
       setPulses((ps) => [...ps.slice(-10), { id: seq.current, p, dur, sol: share }])
-    }, 640)
+    }, 900)
     return () => window.clearInterval(id)
   }, [running, placed, CX, CY])
 
@@ -175,7 +226,7 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
             cx={CX}
             cy={CY}
             rx={r * SX}
-            ry={r}
+            ry={r * SY}
             fill="none"
             stroke="var(--line)"
             strokeWidth={1}
@@ -185,8 +236,8 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
           />
         ))}
         <m.g initial={init({ opacity: 0 })} animate={go ? { opacity: 1 } : undefined} transition={{ duration: 1, delay: delay + T.lines }}>
-          <ellipse cx={CX} cy={CY} rx={RECEIVERSHIP * SX} ry={RECEIVERSHIP} fill="none" stroke="var(--red)" strokeOpacity={0.45} strokeWidth={1} strokeDasharray="2 6" strokeLinecap="round" />
-          <text x={CX} y={CY - RECEIVERSHIP - 10} textAnchor="middle" className="fill-red font-mono tracking-[0.08em]" fontSize={small} opacity={0.85}>
+          <ellipse cx={CX} cy={CY} rx={RECEIVERSHIP * SX} ry={RECEIVERSHIP * SY} fill="none" stroke="var(--red)" strokeOpacity={0.45} strokeWidth={1} strokeDasharray="2 6" strokeLinecap="round" />
+          <text x={CX} y={CY - RECEIVERSHIP * SY - 10} textAnchor="middle" className="fill-red font-mono tracking-[0.08em]" fontSize={small} opacity={0.85}>
             RECEIVERSHIP
           </text>
         </m.g>
@@ -275,7 +326,7 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
               <circle cx="4" cy="4" r="2.6" fill="var(--bg)" />
               <circle cx="14" cy="4" r="2.6" fill="var(--bg)" />
               <circle cx="4" cy="14" r="2.6" fill="var(--bg)" />
-              <circle cx="14" cy="14" r="2.6" fill="var(--lime)" />
+              <circle cx="14" cy="14" r="2.6" fill="var(--alive)" />
             </g>
           </m.g>
         </m.g>
@@ -299,7 +350,7 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
           const isNew = p.c.id === highlight
           const out = p.c.status === 'distressed'
           const red = out && fallen
-          const fill = red ? 'var(--red)' : p.c.status === 'paused' ? 'var(--bg)' : 'var(--lime)'
+          const fill = red ? 'var(--red)' : p.c.status === 'paused' ? 'var(--bg)' : 'var(--alive)'
           const landed = delay + T.dots + (p.ring / RECEIVERSHIP) * 0.55 + p.k * 0.025 + (isNew ? 1.1 : 0)
           const offset = out && p.from && !fallen ? { x: p.from.x - p.x, y: p.from.y - p.y } : { x: 0, y: 0 }
           const fallDelay = p.k * T.fallStep + T.drift
@@ -367,9 +418,9 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
                 </g>
               </m.g>
               <m.text
-                x={p.x + (p.r + 8) * p.side}
-                y={p.y + font * 0.32}
-                textAnchor={p.side === 1 ? 'start' : 'end'}
+                x={p.label.x}
+                y={p.label.y}
+                textAnchor={p.label.anchor}
                 className={cn('font-mono', red ? 'fill-red' : isNew ? 'fill-[var(--lime-text)] font-semibold' : 'fill-ink')}
                 style={{ transition: `fill 0.5s ease ${out ? p.k * T.fallStep : 0}s` }}
                 fontSize={font}
@@ -383,6 +434,23 @@ export function NetworkField({ companies, className, delay = 0, highlight }: { c
           )
         })}
       </svg>
+
+      {/* once the story has played, it can be played again */}
+      <AnimatePresence>
+        {!reduced && cut >= nFailing && (
+          <m.button
+            type="button"
+            onClick={onReplay}
+            className="absolute top-0 right-0 flex h-8 items-center gap-1.5 rounded-full px-3 font-mono text-[11px] tracking-[0.06em] text-ink-3 uppercase hover-device:hover:bg-hover hover-device:hover:text-ink"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <RotateCcw className="size-3" /> Replay
+          </m.button>
+        )}
+      </AnimatePresence>
 
       {/* The company under the pointer */}
       <AnimatePresence>
@@ -454,7 +522,7 @@ export function FieldLegend({ className }: { className?: string }) {
   return (
     <ul className={cn('flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] text-ink-3', className)}>
       <li className="flex items-center gap-2">
-        <span className="size-2.5 rounded-full bg-lime" /> Active
+        <span className="size-2.5 rounded-full bg-alive" /> Active
       </li>
       <li className="flex items-center gap-2">
         <span className="size-2.5 rounded-full border-[1.5px] border-ink" /> Paused

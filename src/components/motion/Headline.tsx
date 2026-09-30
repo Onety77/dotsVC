@@ -31,7 +31,7 @@ export function DotPeriod({ delay = 0, inView = false, className }: { delay?: nu
       <span className="sr-only">.</span>
       <m.span
         aria-hidden
-        className={cn('ml-[0.05em] inline-block size-[0.17em] rounded-full bg-lime', className)}
+        className={cn('ml-[0.05em] inline-block size-[0.17em] rounded-full bg-alive', className)}
         initial={{ y: '-0.9em', scale: 0.4, opacity: 0 }}
         {...(inView ? { whileInView: to, viewport: VIEWPORT } : { animate: to })}
         transition={{ ...SPRING_POP, delay, opacity: { duration: 0.15, delay } }}

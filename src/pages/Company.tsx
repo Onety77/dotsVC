@@ -1,3 +1,5 @@
+import { TravelLink } from '@/components/motion/TravelLink'
+import { travel } from '@/lib/travel'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowUpRight, ChevronLeft } from 'lucide-react'
 import { getCompany, listings } from '@/data/network'
@@ -52,14 +54,16 @@ export function CompanyPage() {
 
       <div className="border-b border-line">
         <div className="wrap pt-8 pb-8 lg:pt-10">
-          <Link to="/network" className="inline-flex items-center gap-1 text-[13px] font-medium text-ink-3 hover-device:hover:text-ink">
+          <TravelLink to="/network" travelId={c.id} className="inline-flex items-center gap-1 text-[13px] font-medium text-ink-3 hover-device:hover:text-ink">
             <ChevronLeft className="size-4" /> Network
-          </Link>
+          </TravelLink>
           <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="flex min-w-0 items-center gap-5">
-              <DotGlyph seed={c.ticker} status={c.status} size={72} src={c.image} />
+              <DotGlyph seed={c.ticker} status={c.status} size={72} src={c.image} travelId={c.id} travelFixed reveal={false} />
               <div className="min-w-0">
-                <h1 className="truncate text-h1 font-semibold">{c.name}</h1>
+                <h1 className="w-fit max-w-full truncate text-h1 font-semibold" {...travel('name', c.id, true)}>
+                  {c.name}
+                </h1>
                 <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1">
                   <span className="font-mono text-sm text-ink-3">${c.ticker}</span>
                   <Status status={c.status} />

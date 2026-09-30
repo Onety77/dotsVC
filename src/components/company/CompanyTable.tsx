@@ -1,5 +1,6 @@
+import { TravelLink } from '@/components/motion/TravelLink'
+import { travel } from '@/lib/travel'
 import { useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { AnimatePresence, m, useInView, useReducedMotion } from 'motion/react'
 import { EASE_OUT } from '@/lib/motion'
 import { ChevronRight } from 'lucide-react'
@@ -44,14 +45,17 @@ export function CompanyTable({ companies, className }: { companies: Company[]; c
             exit={{ opacity: 0, transition: { duration: 0.15 } }}
             transition={{ duration: 0.5, delay: Math.min(i, 10) * 0.045, ease: EASE_OUT, layout: { type: 'spring', stiffness: 380, damping: 36 } }}
           >
-            <Link
+            <TravelLink
               to={`/company/${c.id}`}
+              travelId={c.id}
               className={cn('group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-4 py-4 transition-colors hover-device:hover:bg-hover sm:px-5', cols)}
             >
               <span className="flex min-w-0 items-center gap-3">
-                <DotGlyph seed={c.ticker} status={c.status} size={40} src={c.image} />
+                <DotGlyph seed={c.ticker} status={c.status} size={40} src={c.image} travelId={c.id} />
                 <span className="min-w-0">
-                  <span className="block truncate font-semibold">{c.name}</span>
+                  <span className="block w-fit max-w-full truncate font-semibold" {...travel('name', c.id)}>
+                    {c.name}
+                  </span>
                   <span className="block font-mono text-[12px] text-ink-3">${c.ticker}</span>
                 </span>
               </span>
@@ -72,7 +76,7 @@ export function CompanyTable({ companies, className }: { companies: Company[]; c
                 {c.jobs.find((j) => j.status === 'shipping')?.title ?? (c.status === 'distressed' ? 'Waiting for new owners' : 'Idle')}
               </span>
               <ChevronRight className="hidden size-4 text-ink-4 transition-colors group-hover:text-ink lg:block" />
-            </Link>
+            </TravelLink>
           </m.li>
         ))}
         </AnimatePresence>

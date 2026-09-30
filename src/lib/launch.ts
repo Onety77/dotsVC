@@ -15,7 +15,7 @@ export interface LaunchDraft {
 
 /** Placeholder routing of creator fees. */
 export const routing = [
-  { k: 'Company treasury', v: 0.8, cls: 'bg-lime' },
+  { k: 'Company treasury', v: 0.8, cls: 'bg-alive' },
   { k: 'DotCo holdco', v: 0.1, cls: 'bg-ink' },
   { k: 'Creator', v: 0.1, cls: 'bg-ink-4' },
 ]

@@ -8,7 +8,7 @@ import { EASE_OUT } from '@/lib/motion'
  */
 export function CountUp({ value, format, duration = 1.2, delay = 0, className }: { value: number; format: (n: number) => string; duration?: number; delay?: number; className?: string }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const seen = useInView(ref, { once: true, margin: '0px 0px -8% 0px' })
+  const seen = useInView(ref, { once: true })
   const reduced = useReducedMotion()
   const shown = useRef<number | null>(null)
   // inline formatters change identity every render; don't let that restart the count

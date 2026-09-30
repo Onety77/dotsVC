@@ -31,7 +31,9 @@
 
   --red: #d9302c;
   --red-soft: rgb(217 48 44 / 0.1);
-  --pulse: #8fc400; /* moving lime: fee pulses, loaders. Deeper in light so small dots stay visible */
+  --grid: rgb(12 12 14 / 0.22); /* the hero's background dot grid */
+  --alive: #a3d91c; /* lime for dots and markers: deeper than the button lime so small dots hold on light grounds */
+  --pulse: #8ac000; /* moving lime: fee pulses, loaders. Deeper in light so small dots stay visible */
 
   --dot: #0c0c0e; /* a lit dot in the Field */
   --dot-dim: rgb(12 12 14 / 0.14);
@@ -61,6 +63,8 @@
 
   --red: #ff5a52;
   --red-soft: rgb(255 90 82 / 0.12);
+  --grid: rgb(245 245 243 / 0.16);
+  --alive: #cfff3d;
   --pulse: #cfff3d;
 
   --dot: #f5f5f3;
@@ -82,6 +86,7 @@
   --color-ink-3: var(--ink-3);
   --color-ink-4: var(--ink-4);
   --color-lime: var(--lime);
+  --color-alive: var(--alive);
   --color-lime-soft: var(--lime-soft);
   --color-lime-text: var(--lime-text);
   --color-on-lime: var(--on-lime);
@@ -159,6 +164,11 @@
   input::placeholder, textarea::placeholder { color: var(--ink-4); }
 }
 
+/* In light, cards sit on the page with a soft lift instead of a hairline alone. */
+:root:not(.dark) .rounded-card.bg-surface {
+  box-shadow: 0 1px 1px rgb(12 12 14 / 0.03), 0 12px 32px -20px rgb(12 12 14 / 0.2);
+}
+
 .skeleton {
   background: var(--sunken);
   border-radius: 8px;
@@ -209,10 +219,18 @@
 
 /* Theme: the new theme spreads out in a circle from the switch (lib/theme.ts) */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+/* Between pages a company's glyph and name fly from the list into its page header (and back). */
+::view-transition-group(*) { animation-duration: 0.55s; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+/* …while the old page fades out under the new one (the theme switch keeps its own reveal) */
+html[data-vt="travel"]::view-transition-old(root) { animation: vt-out 0.3s ease both; }
+html[data-vt="travel"]::view-transition-new(root) { animation: vt-in 0.3s ease both; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   .skeleton, .breathe, .flatline, .heartbeat, .live-dot::after, .dot-wave > *, .caret { animation: none; }
   .glyph circle, .runway-dot { transition: none; }
   .glyph[data-seen="false"] circle { transform: none; opacity: 1; }
   .glyph-ripple { display: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

@@ -3,6 +3,7 @@ import { useInView } from 'motion/react'
 import type { CompanyStatus } from '@/types'
 import { cn } from '@/lib/cn'
 import { seeded } from '@/lib/seeded'
+import { travel } from '@/lib/travel'
 
 /**
  * A company's emblem until real coin art is wired: a mirrored 5×5 dot matrix
@@ -19,7 +20,16 @@ export function DotGlyph({
   size = 40,
   src,
   className,
+  travelId,
+  travelFixed,
+  reveal = true,
 }: {
+  /** the company this glyph belongs to, so it can fly between pages (TravelLink) */
+  travelId?: string
+  /** the glyph's home: its company page header */
+  travelFixed?: boolean
+  /** pop the dots in on first view; off where the glyph arrives by flying in */
+  reveal?: boolean
   seed: string
   status?: CompanyStatus
   size?: number
@@ -27,7 +37,8 @@ export function DotGlyph({
   className?: string
 }) {
   const ref = useRef<HTMLSpanElement>(null)
-  const seen = useInView(ref, { once: true, margin: '0px 0px -4% 0px' })
+  const inView = useInView(ref, { once: true, margin: '0px 0px -4% 0px' })
+  const seen = inView || !reveal
   const cells = useMemo(() => {
     const r = seeded(seed)
     const half = Array.from({ length: 5 }, () => Array.from({ length: 3 }, () => r() > 0.42))
@@ -45,13 +56,14 @@ export function DotGlyph({
   }
 
   const state =
-    status === 'active' ? { fill: 'var(--lime)', stroke: 'none' } : status === 'distressed' ? { fill: 'var(--red)', stroke: 'none' } : { fill: 'var(--sunken)', stroke: 'var(--ink)' }
+    status === 'active' ? { fill: 'var(--alive)', stroke: 'none' } : status === 'distressed' ? { fill: 'var(--red)', stroke: 'none' } : { fill: 'var(--sunken)', stroke: 'var(--ink)' }
 
   return (
     <span
       ref={ref}
       className={cn('inline-grid shrink-0 place-items-center overflow-hidden rounded-[28%] border border-line bg-sunken', className)}
-      style={{ width: size, height: size }}
+      {...(travelId ? travel('glyph', travelId, travelFixed) : {})}
+      style={{ width: size, height: size, ...(travelId && travelFixed ? { viewTransitionName: 'travel-glyph' } : {}) }}
     >
       {src ? (
         <img src={src} alt="" width={size} height={size} className="size-full object-cover" />

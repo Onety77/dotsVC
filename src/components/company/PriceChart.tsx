@@ -81,8 +81,8 @@ export function PriceChart({ company, className }: { company: Company; className
       >
         <defs>
           <linearGradient id={`fill-${company.id}`} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor={up ? 'var(--lime)' : 'var(--red)'} stopOpacity="0.22" />
-            <stop offset="1" stopColor={up ? 'var(--lime)' : 'var(--red)'} stopOpacity="0" />
+            <stop offset="0" stopColor={up ? 'var(--alive)' : 'var(--red)'} stopOpacity="0.22" />
+            <stop offset="1" stopColor={up ? 'var(--alive)' : 'var(--red)'} stopOpacity="0" />
           </linearGradient>
           {/* the wipe that draws the line */}
           <clipPath id={`wipe-${uid}`}>
@@ -94,7 +94,7 @@ export function PriceChart({ company, className }: { company: Company; className
         ))}
         <g clipPath={`url(#wipe-${uid})`}>
           <path d={`${line} L${W},${H} L0,${H} Z`} fill={`url(#fill-${company.id})`} />
-          <path d={line} fill="none" stroke={up ? 'var(--lime-text)' : 'var(--red)'} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+          <path d={line} fill="none" stroke={up ? 'var(--pulse)' : 'var(--red)'} strokeWidth="2" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
         </g>
         {hover !== null && (
           <line x1={x(hover)} x2={x(hover)} y1="0" y2={H} stroke="var(--ink)" strokeOpacity="0.35" vectorEffect="non-scaling-stroke" />
@@ -108,7 +108,7 @@ export function PriceChart({ company, className }: { company: Company; className
         <m.span
           key={range}
           aria-hidden
-          className={cn('live-dot pointer-events-none absolute size-2 -translate-1/2 rounded-full', up ? 'bg-lime-text text-lime-text' : 'bg-red text-red')}
+          className={cn('live-dot pointer-events-none absolute size-2 -translate-1/2 rounded-full', up ? 'bg-[var(--pulse)] text-[var(--pulse)]' : 'bg-red text-red')}
           style={{ left: '100%', top: `${(y(data[data.length - 1]) / H) * 100}%` }}
           initial={reduced ? false : { opacity: 0 }}
           animate={seen || reduced ? { opacity: 1 } : undefined}

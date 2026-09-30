@@ -13,7 +13,7 @@ export function LogoMark({ className, turns = 0 }: { className?: string; turns?:
       <circle cx="7" cy="7" r="3.6" fill="var(--ink)" />
       <circle cx="17" cy="7" r="3.6" fill="var(--ink)" />
       <circle cx="7" cy="17" r="3.6" fill="var(--ink)" />
-      <circle cx="17" cy="17" r="3.6" fill="var(--lime)" />
+      <circle cx="17" cy="17" r="3.6" fill="var(--alive)" />
     </m.svg>
   )
 }
